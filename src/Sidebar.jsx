@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { NavContext } from "./App";
+import { NavContext } from "./NavContext";
 import {
     IconHome, IconNewspaper, IconUserCircle, IconAdvancedSearch,
     IconTalentSearch, IconOfficialChannel, IconTalentPool,

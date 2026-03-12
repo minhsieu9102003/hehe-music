@@ -10,7 +10,7 @@ import {
     CloseIcon as IconClose,
     SpinnerIcon as IconSpinner,
 } from "./icons";
-import { NavContext } from "./App";
+import { NavContext } from "./NavContext";
 
 // ============================================================
 // CYDAS People — GlobalHeader (React UI Clone)

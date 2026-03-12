@@ -1,11 +1,8 @@
-import React, { useState, createContext, useContext } from "react";
+import React, { useState } from "react";
 import MainPage from "./MainPage";
 import HomePage from "./HomePage";
 import PlaylistPage from "./PlaylistPage";
-
-// Simple navigation context (no react-router needed)
-export const NavContext = createContext({ page: "home", go: () => { } });
-export function useNav() { return useContext(NavContext); }
+import { NavContext } from "./NavContext";
 
 export default function App() {
   const [page, setPage] = useState("home");
