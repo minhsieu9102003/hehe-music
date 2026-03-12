@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Sidebar from "./SideBar";
+import Sidebar from "./Sidebar";
 import {
     SearchIcon, RightArrowIcon, BookmarkIcon,
     IconNewspaper,
