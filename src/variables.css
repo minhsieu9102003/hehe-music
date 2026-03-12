@@ -1,0 +1,136 @@
+/* ============================================================
+   CYDAS People — CSS Variables (mirrors variables.scss)
+   ============================================================ */
+
+:root {
+    /* ─── Core colors ─── */
+    --color-primary: #007bc3;
+    --color-primary-light: #22aee5;
+    --color-primary-dark: #003993;
+    --color-white: #ffffff;
+    --color-black: #333333;
+
+    /* ─── Greys ─── */
+    --color-grey-3: #999999;
+    --color-grey-4: #4d4d4d;
+    --color-grey-5: #5f6479;
+    --color-grey-6: #666666;
+    --color-light-grey: #dcdcdc;
+    --color-grey-bg: #f8f8f8;
+    --color-grey-hover: #f1f2f7;
+    --yui-color-gray-4: #c4c4c4;
+
+    /* ─── Blue Greys ─── */
+    --color-blue-grey-4: #48647f;
+    --color-blue-grey-6: #627d98;
+    --color-blue-grey-bc: #bcccdc;
+
+    /* ─── Alice Blues ─── */
+    --color-alice-blue: #f0f4f8;
+    --color-alice-blue-1: #f1f2f7;
+    --color-alice-blue-9: #d9e2ec;
+    --color-blue-bg: #f4f7fb;
+    --color-blue-hover: #e7f1fd;
+
+    /* ─── Reds ─── */
+    --color-red-80: #e53935;
+    --color-red-cf: #cf1124;
+    --color-red-8: #8a041a;
+    --color-red-badge: #ed5d5d;
+    --color-light-red: #ffe3e3;
+
+    /* ─── Layout sizes ─── */
+    --header-height: 64px;
+    --footer-height: 52px;
+    --global-menu-width: 72px;
+    --sidebar-width: 240px;
+
+    /* ─── Shadows ─── */
+    --shadow-default: 0px 2px 12px rgba(102, 102, 102, 0.3);
+    --shadow-header: 0px 0px 8px rgba(102, 102, 102, 0.24);
+    --shadow-header-v2: 0px 0px 16px 0px rgba(102, 102, 102, 0.1);
+
+    /* ─── Breakpoints (for reference, use in @media) ─── */
+    /* $mobile: 767px */
+    /* $tablet: 1023px */
+    /* $desktop: 1280px */
+    /* $large-desktop: 1440px */
+
+    /* ─── Z-index ─── */
+    --zindex-sidebar: 100;
+    --zindex-fixed-menu: 300;
+    --zindex-dropdown: 991;
+    --zindex-module-menu: 1000;
+
+    /* ─── Typography ─── */
+    --font-family-ja: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+    --font-family-vie: Arial, sans-serif;
+
+    /* ─── Scrollbar ─── */
+    --scrollbar-color: #aaa;
+}
+
+/* ─── Reset ─── */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: var(--font-family-ja);
+    color: var(--color-black);
+    background: #f5f6f8;
+    line-height: 1.5;
+}
+
+a {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ─── Custom scrollbar (webkit) ─── */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 6px;
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-color);
+}
+
+/* ─── Utility: modal scroll lock ─── */
+.disable-scroll {
+    overflow: hidden !important;
+}
+
+/* ─── Utility: zoom 90% fix (from Vue original) ─── */
+.v--modal-block-scroll {
+    width: 100% !important;
+}
