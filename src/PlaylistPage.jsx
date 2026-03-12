@@ -38,6 +38,15 @@ function savePlaylists(pl) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(pl));
 }
 
+function fisherYatesShuffle(length) {
+    const order = Array.from({ length }, (_, i) => i);
+    for (let i = order.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [order[i], order[j]] = [order[j], order[i]];
+    }
+    return order;
+}
+
 const COLORS = ["#808CBA", "#E8927C", "#7EC8A0", "#C490D1", "#6BB8D6", "#D4A85C", "#E07B9B", "#8CABD4"];
 let _nextId = Date.now();
 function uid() { return _nextId++; }
@@ -60,6 +69,8 @@ const Icon = {
     Songs: ({ s = 16, c = "#999" }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round"><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></svg>,
     Link: ({ s = 16, c = "#999" }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg>,
     Vol: ({ s = 18, c = "#666" }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" /></svg>,
+    Shuffle: ({ s = 18, c = "#666" }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 3 21 3 21 8" /><line x1="4" y1="20" x2="21" y2="3" /><polyline points="21 16 21 21 16 21" /><line x1="15" y1="15" x2="21" y2="21" /><line x1="4" y1="4" x2="9" y2="9" /></svg>,
+    Loop: ({ s = 18, c = "#666" }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="17 1 21 5 17 9" /><path d="M3 11V9a4 4 0 0 1 4-4h14" /><polyline points="7 23 3 19 7 15" /><path d="M21 13v2a4 4 0 0 1-4 4H3" /></svg>,
 };
 
 // ═══════════════════════════════════════════════════
@@ -198,6 +209,10 @@ export default function PlaylistPage() {
     const yt = useYouTubePlayer();
     const [nowPlaying, setNowPlaying] = useState(null); // { playlistId, songIdx }
     const [delSong, setDelSong] = useState(null); // { plId, songId }
+    const [shuffle, setShuffle] = useState(false);
+    const [loop, setLoop] = useState(false);
+    const [shuffleOrder, setShuffleOrder] = useState([]); // shuffled indices
+    const [shufflePos, setShufflePos] = useState(0); // current position in shuffleOrder
 
     // Save to localStorage
     useEffect(() => { savePlaylists(playlists); }, [playlists]);
@@ -206,12 +221,30 @@ export default function PlaylistPage() {
     yt.onEnd(() => {
         if (!nowPlaying) return;
         const pl = playlists.find(p => p.id === nowPlaying.playlistId);
-        if (!pl) return;
-        const next = nowPlaying.songIdx + 1;
-        if (next < pl.songs.length) {
-            playSong(pl.id, next);
+        if (!pl || pl.songs.length === 0) return;
+
+        if (shuffle) {
+            const nextPos = shufflePos + 1;
+            if (nextPos < shuffleOrder.length) {
+                setShufflePos(nextPos);
+                playSongDirect(pl.id, shuffleOrder[nextPos]);
+            } else if (loop) {
+                const newOrder = fisherYatesShuffle(pl.songs.length);
+                setShuffleOrder(newOrder);
+                setShufflePos(0);
+                playSongDirect(pl.id, newOrder[0]);
+            } else {
+                setNowPlaying(null);
+            }
         } else {
-            setNowPlaying(null);
+            const next = nowPlaying.songIdx + 1;
+            if (next < pl.songs.length) {
+                playSongDirect(pl.id, next);
+            } else if (loop) {
+                playSongDirect(pl.id, 0);
+            } else {
+                setNowPlaying(null);
+            }
         }
     });
 
@@ -268,11 +301,58 @@ export default function PlaylistPage() {
     };
 
     // ── Playback ──
-    const playSong = (plId, idx) => {
+    const playSongDirect = (plId, idx) => {
         const pl = playlists.find(p => p.id === plId);
         if (!pl || !pl.songs[idx]) return;
         yt.load(pl.songs[idx].videoId);
         setNowPlaying({ playlistId: plId, songIdx: idx });
+    };
+    const playSong = (plId, idx) => {
+        const pl = playlists.find(p => p.id === plId);
+        if (!pl || !pl.songs[idx]) return;
+        if (shuffle) {
+            const newOrder = fisherYatesShuffle(pl.songs.length);
+            // put the clicked song first
+            const pos = newOrder.indexOf(idx);
+            [newOrder[0], newOrder[pos]] = [newOrder[pos], newOrder[0]];
+            setShuffleOrder(newOrder);
+            setShufflePos(0);
+        }
+        playSongDirect(plId, idx);
+    };
+    const skipNext = () => {
+        if (!nowPlaying || !nowPl) return;
+        if (shuffle) {
+            const nextPos = shufflePos + 1;
+            if (nextPos < shuffleOrder.length) {
+                setShufflePos(nextPos);
+                playSongDirect(nowPl.id, shuffleOrder[nextPos]);
+            } else if (loop) {
+                const newOrder = fisherYatesShuffle(nowPl.songs.length);
+                setShuffleOrder(newOrder);
+                setShufflePos(0);
+                playSongDirect(nowPl.id, newOrder[0]);
+            }
+        } else {
+            const next = nowPlaying.songIdx + 1;
+            if (next < nowPl.songs.length) {
+                playSongDirect(nowPl.id, next);
+            } else if (loop) {
+                playSongDirect(nowPl.id, 0);
+            }
+        }
+    };
+    const skipPrev = () => {
+        if (!nowPlaying || !nowPl) return;
+        if (shuffle) {
+            const prevPos = shufflePos - 1;
+            if (prevPos >= 0) {
+                setShufflePos(prevPos);
+                playSongDirect(nowPl.id, shuffleOrder[prevPos]);
+            }
+        } else {
+            playSongDirect(nowPl.id, Math.max(0, nowPlaying.songIdx - 1));
+        }
     };
     const nowSong = nowPlaying ? playlists.find(p => p.id === nowPlaying.playlistId)?.songs[nowPlaying.songIdx] : null;
     const nowPl = nowPlaying ? playlists.find(p => p.id === nowPlaying.playlistId) : null;
@@ -419,18 +499,20 @@ export default function PlaylistPage() {
                     </div>
                     <div className="pl-player__center">
                         <div className="pl-player__controls">
-                            <button className="pl-player__cbtn" onClick={() => nowPlaying && playSong(nowPlaying.playlistId, Math.max(0, nowPlaying.songIdx - 1))}>
+                            <button className={`pl-player__cbtn ${shuffle ? "pl-player__cbtn--active" : ""}`} onClick={() => setShuffle(v => !v)} title={shuffle ? "シャッフル オン" : "シャッフル オフ"}>
+                                <Icon.Shuffle s={16} c={shuffle ? "#007bc3" : "#666"} />
+                            </button>
+                            <button className="pl-player__cbtn" onClick={skipPrev}>
                                 <Icon.SkipB s={16} c="#666" />
                             </button>
                             <button className="pl-player__play" onClick={() => yt.playing ? yt.pause() : yt.play()}>
                                 {yt.playing ? <Icon.Pause s={18} /> : <Icon.Play s={18} />}
                             </button>
-                            <button className="pl-player__cbtn" onClick={() => {
-                                if (!nowPlaying || !nowPl) return;
-                                const next = nowPlaying.songIdx + 1;
-                                if (next < nowPl.songs.length) playSong(nowPl.id, next);
-                            }}>
+                            <button className="pl-player__cbtn" onClick={skipNext}>
                                 <Icon.SkipF s={16} c="#666" />
+                            </button>
+                            <button className={`pl-player__cbtn ${loop ? "pl-player__cbtn--active" : ""}`} onClick={() => setLoop(v => !v)} title={loop ? "ループ オン" : "ループ オフ"}>
+                                <Icon.Loop s={16} c={loop ? "#007bc3" : "#666"} />
                             </button>
                         </div>
                         <div className="pl-player__progress-row">
@@ -599,6 +681,8 @@ const CSS = `
 .pl-player__controls{display:flex;align-items:center;gap:16px}
 .pl-player__cbtn{width:32px;height:32px;border:none;background:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s}
 .pl-player__cbtn:hover{background:#f0f2f5}
+.pl-player__cbtn--active{background:#e7f1fd}
+.pl-player__cbtn--active:hover{background:#d4e6f9}
 .pl-player__play{width:36px;height:36px;border:none;background:#007bc3;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s}
 .pl-player__play:hover{background:#0069a8}
 .pl-player__progress-row{display:flex;align-items:center;gap:8px;width:100%}
