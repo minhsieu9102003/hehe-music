@@ -174,8 +174,6 @@ export function PlayerProvider({ children }) {
                 setShuffleOrder(newOrder);
                 setShufflePos(0);
                 playSongDirect(pl.id, newOrder[0]);
-            } else {
-                setNowPlaying(null);
             }
         } else {
             const next = nowPlaying.songIdx + 1;
@@ -183,8 +181,6 @@ export function PlayerProvider({ children }) {
                 playSongDirect(pl.id, next);
             } else if (loop) {
                 playSongDirect(pl.id, 0);
-            } else {
-                setNowPlaying(null);
             }
         }
     };
