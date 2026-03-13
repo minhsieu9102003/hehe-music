@@ -8,36 +8,79 @@ const EXCLUDE_PATTERNS = [/phpstan/i, /\.neon$/i, /router/i, /routes?\./i, /\.lo
 
 function parseRgOutput(rawOutput, sourceFile) {
     const lines = rawOutput.split("\n");
-    const filePaths = new Set();
-    // Extract base filename from source for matching
     const srcBase = sourceFile.split("/").pop().replace(/\.\w+$/, "");
+    // Interface name: e.g. EmployeeSearchConditionQueryService → IEmployeeSearchConditionQueryService
+    const interfaceName = "I" + srcBase;
+
+    // Step 1: Group rg output into { filePath, contentLines[] }
+    const groups = [];
+    let currentFile = null;
+    let currentContent = [];
+
+    const flushGroup = () => {
+        if (currentFile) {
+            groups.push({ filePath: currentFile, contentLines: [...currentContent] });
+        }
+        currentContent = [];
+    };
 
     for (const line of lines) {
         const trimmed = line.trim();
         if (!trimmed) continue;
-        // Skip lines that look like command prompts (contain % or $ followed by command)
+        // Skip prompt lines
         if (/^[^\s]*[@%\$]\s/.test(trimmed)) continue;
         if (/^(rg|grep|find|cd|ls)\s/.test(trimmed)) continue;
-        // Skip numbered content lines (e.g. "36:use People\Core\...")
-        if (/^\d+[:]\s*/.test(trimmed)) continue;
-        // Skip lines that are clearly not file paths
+
+        // Content line (e.g. "36:use People\Core\...")
+        if (/^\d+[:]\s*/.test(trimmed)) {
+            currentContent.push(trimmed.replace(/^\d+:\s*/, ""));
+            continue;
+        }
+
+        // Skip non-path lines
         if (trimmed.startsWith("-") || trimmed.startsWith("#")) continue;
+
         // Check if it looks like a file path
         if (/\.(php|js|jsx|ts|tsx|vue|css|scss|html|twig|yaml|yml|json|xml|py|rb|go|java|kt|swift)$/i.test(trimmed)) {
-            filePaths.add(trimmed);
+            flushGroup();
+            currentFile = trimmed;
         }
     }
+    flushGroup();
 
-    // Filter
+    // Step 2: Filter groups
     const result = [];
-    for (const fp of filePaths) {
-        // Skip excluded patterns
+    for (const g of groups) {
+        const fp = g.filePath;
+        const fpBase = fp.split("/").pop().replace(/\.\w+$/, "");
+
+        // Skip excluded patterns (phpstan, neon, router, etc.)
         if (EXCLUDE_PATTERNS.some(p => p.test(fp))) continue;
-        // Skip the source file itself (exact match or basename match)
+
+        // Skip the source file itself
         const fpNorm = fp.replace(/^\/+/, "");
         const srcNorm = sourceFile.replace(/^\/+/, "");
         if (fpNorm === srcNorm) continue;
         if (fp.split("/").pop() === sourceFile.split("/").pop()) continue;
+
+        // Skip interface files (basename starts with I + uppercase, e.g. IEmployeeService.php)
+        if (/^I[A-Z]/.test(fpBase)) continue;
+
+        // Skip files that only reference the interface, not the actual class
+        // Check if content lines contain the interface name but NOT the actual class name alone
+        if (g.contentLines.length > 0) {
+            const hasDirectRef = g.contentLines.some(cl => {
+                // Check if line references srcBase directly (not as part of interfaceName)
+                // Remove interface references first, then check if srcBase still appears
+                const withoutInterface = cl.replace(new RegExp(interfaceName, "g"), "");
+                return withoutInterface.includes(srcBase);
+            });
+            const hasInterfaceRef = g.contentLines.some(cl => cl.includes(interfaceName));
+
+            // If only interface references exist (no direct class reference), skip
+            if (hasInterfaceRef && !hasDirectRef) continue;
+        }
+
         result.push(fp);
     }
     return result;
