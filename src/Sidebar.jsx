@@ -42,7 +42,7 @@ export default function Sidebar({ activeId = "home" }) {
                                 onClick={() => handleClick(item)}
                                 title={item.label}
                             >
-                                <item.Icon color={active ? "#808CBA" : "#999"} />
+                                <item.Icon color={active ? "#808CBA" : "#999"} size={32} />
                             </div>
                         );
                     })}
@@ -57,7 +57,7 @@ export default function Sidebar({ activeId = "home" }) {
                             onClick={() => handleClick(item)}
                             title={item.label}
                         >
-                            <item.Icon color={active ? "#808CBA" : "#999"} />
+                            <item.Icon color={active ? "#808CBA" : "#999"} size={32} />
                         </div>
                     );
                 })}
@@ -67,10 +67,10 @@ export default function Sidebar({ activeId = "home" }) {
 }
 
 const sidebarStyles = `
-.hp-sb{width:72px;min-width:72px;background:#fff;border-right:1px solid #e8e8e8;display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:2px;position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto;z-index:5}
+.hp-sb{width:88px;min-width:88px;background:#fff;border-right:1px solid #e8e8e8;display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:2px;position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto;z-index:5}
 .hp-sb__main{display:flex;flex-direction:column;align-items:center;gap:2px}
-.hp-sb__sep{width:36px;height:1px;background:#e0e0e0;margin:8px 0}
-.hp-sb__item{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s;flex-shrink:0}
+.hp-sb__sep{width:44px;height:1px;background:#e0e0e0;margin:8px 0}
+.hp-sb__item{width:64px;height:64px;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s;flex-shrink:0}
 .hp-sb__item:hover{background:#f1f2f7}
 .hp-sb__item.active{background:#e7f1fd}
 @media(max-width:767px){.hp-sb{display:none}}

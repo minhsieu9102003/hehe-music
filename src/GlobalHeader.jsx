@@ -328,7 +328,7 @@ export default function GlobalHeader({
                                     style={{ display: searchIsOpen ? "none" : undefined }}
                                 >
                                     <span className="gh-top-search__icon">
-                                        <IconAdvancedSearch color="#666" />
+                                        <IconAdvancedSearch color="#666" size={32} />
                                     </span>
                                     <input
                                         type="text"
@@ -357,7 +357,7 @@ export default function GlobalHeader({
                                             )}
                                             <div className="gh-search-box">
                                                 <span className="gh-search-box__icon">
-                                                    <IconAdvancedSearch color="#666" />
+                                                    <IconAdvancedSearch color="#666" size={32} />
                                                 </span>
                                                 <input
                                                     ref={searchInputRef}
