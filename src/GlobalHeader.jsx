@@ -122,6 +122,12 @@ function ModuleMenu({ menuLists, onClickItem }) {
                     </div>
                     <span className="gh-mm-label">{temp !== null ? `天気 ${temp}°C` : "天気予報"}</span>
                 </div>
+                <div className="gh-mm-item" onClick={() => { go("fake-loading"); onClickItem?.({ name: "ホーム2" }); }}>
+                    <div className="gh-mm-icon">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path fillRule="evenodd" clipRule="evenodd" d="M5.93 15.1C5.65 15.39 5.5 15.76 5.5 16.16V26.5H10.5V20C10.5 18.62 11.62 17.5 13 17.5H19C20.38 17.5 21.5 18.62 21.5 20V26.5H26.5V16.16C26.5 15.76 26.35 15.39 26.07 15.1L17.07 5.95L18.14 4.9L27.14 14.06C27.69 14.62 28 15.37 28 16.16V27C28 27.55 27.55 28 27 28H21C20.45 28 20 27.55 20 27V20C20 19.45 19.55 19 19 19H13C12.45 19 12 19.45 12 20V27C12 27.55 11.55 28 11 28H5C4.45 28 4 27.55 4 27V16.16C4 15.37 4.31 14.62 4.86 14.06L13.86 4.9L14.93 5.95L5.93 15.1ZM13.86 4.9L14.93 5.95C15.52 5.35 16.48 5.35 17.07 5.95L18.14 4.9C16.96 3.7 15.04 3.7 13.86 4.9Z" fill="#999" /></svg>
+                    </div>
+                    <span className="gh-mm-label">ホーム2</span>
+                </div>
             </div>
         </div>
     );

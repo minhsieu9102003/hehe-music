@@ -4,6 +4,7 @@ import HomePage from "./HomePage";
 import PlaylistPage from "./PlaylistPage";
 import NotePage from "./NotePage";
 import WeatherPage from "./WeatherPage";
+import FakeLoadingPage from "./FakeLoadingPage";
 import { NavContext } from "./NavContext";
 import { PlayerProvider } from "./PlayerContext";
 import { NoteProvider } from "./NoteContext";
@@ -20,6 +21,7 @@ export default function App() {
       case "playlist": return <PlaylistPage />;
       case "notes": return <NotePage />;
       case "weather": return <WeatherPage />;
+      case "fake-loading": return <FakeLoadingPage />;
       default: return <HomePage />;
     }
   };
