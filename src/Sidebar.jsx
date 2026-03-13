@@ -15,7 +15,7 @@ const SIDEBAR_MAIN = [
     { id: "channel", Icon: IconOfficialChannel, label: "チャンネル" },
     { id: "talent-pool", Icon: IconTalentPool, label: "タレントプール" },
     { id: "faq", Icon: IconFAQ, label: "FAQ" },
-    { id: "note2", Icon: IconNote2, label: "ノート" },
+    { id: "note2", Icon: IconNote2, label: "ノート", page: "notes" },
 ];
 const SIDEBAR_BOTTOM = [
     { id: "agreement", Icon: IconAgreement, label: "人事申請" },
@@ -67,9 +67,9 @@ export default function Sidebar({ activeId = "home" }) {
 }
 
 const sidebarStyles = `
-.hp-sb{width:88px;min-width:88px;background:#fff;border-right:1px solid #e8e8e8;display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:2px;position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto;z-index:5}
+.hp-sb{width:80px;min-width:80px;background:#fff;border-right:1px solid #e8e8e8;display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:2px;position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto;z-index:5}
 .hp-sb__main{display:flex;flex-direction:column;align-items:center;gap:2px}
-.hp-sb__sep{width:44px;height:1px;background:#e0e0e0;margin:8px 0}
+.hp-sb__sep{width:36px;height:1px;background:#e0e0e0;margin:8px 0}
 .hp-sb__item{width:64px;height:64px;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s;flex-shrink:0}
 .hp-sb__item:hover{background:#f1f2f7}
 .hp-sb__item.active{background:#e7f1fd}

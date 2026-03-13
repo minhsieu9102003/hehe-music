@@ -82,6 +82,17 @@ function MusicNoteIcon({ size = 32, color = "#999" }) {
     );
 }
 
+function NotepadIcon({ size = 32, color = "#999" }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 32 32" fill="none">
+            <path fillRule="evenodd" clipRule="evenodd" d="M9 4C7.34315 4 6 5.34315 6 7V25C6 26.6569 7.34315 28 9 28H23C24.6569 28 26 26.6569 26 25V7C26 5.34315 24.6569 4 23 4H9ZM7.5 7C7.5 6.17157 8.17157 5.5 9 5.5H23C23.8284 5.5 24.5 6.17157 24.5 7V25C24.5 25.8284 23.8284 26.5 23 26.5H9C8.17157 26.5 7.5 25.8284 7.5 25V7Z" fill={color} />
+            <path d="M10 10.75C10 10.3358 10.3358 10 10.75 10H21.25C21.6642 10 22 10.3358 22 10.75C22 11.1642 21.6642 11.5 21.25 11.5H10.75C10.3358 11.5 10 11.1642 10 10.75Z" fill={color} />
+            <path d="M10 14.75C10 14.3358 10.3358 14 10.75 14H21.25C21.6642 14 22 14.3358 22 14.75C22 15.1642 21.6642 15.5 21.25 15.5H10.75C10.3358 15.5 10 15.1642 10 14.75Z" fill={color} />
+            <path d="M10 18.75C10 18.3358 10.3358 18 10.75 18H17.25C17.6642 18 18 18.3358 18 18.75C18 19.1642 17.6642 19.5 17.25 19.5H10.75C10.3358 19.5 10 19.1642 10 18.75Z" fill={color} />
+        </svg>
+    );
+}
+
 function ModuleMenu({ menuLists, onClickItem }) {
     const { go } = useContext(NavContext);
     return (
@@ -94,6 +105,12 @@ function ModuleMenu({ menuLists, onClickItem }) {
                         <MusicNoteIcon size={32} color="#999" />
                     </div>
                     <span className="gh-mm-label">ポジション音楽</span>
+                </div>
+                <div className="gh-mm-item" onClick={() => { go("notes"); onClickItem?.({ name: "ノート" }); }}>
+                    <div className="gh-mm-icon">
+                        <NotepadIcon size={32} color="#999" />
+                    </div>
+                    <span className="gh-mm-label">ノート</span>
                 </div>
             </div>
         </div>
