@@ -9,12 +9,12 @@ import {
 const SIDEBAR_MAIN = [
     { id: "home", Icon: IconHome, label: "ホーム", page: "home" },
     { id: "newspaper", Icon: IconNewspaper, label: "申請" },
-    { id: "user-circle", Icon: IconUserCircle, label: "社員情報" },
+    { id: "user-circle", Icon: IconUserCircle, label: "ボブ情報" },
     { id: "adv-search", Icon: IconAdvancedSearch, label: "詳細検索" },
     { id: "talent-search", Icon: IconTalentSearch, label: "タレント検索" },
     { id: "channel", Icon: IconOfficialChannel, label: "チャンネル" },
     { id: "talent-pool", Icon: IconTalentPool, label: "タレントプール" },
-    { id: "faq", Icon: IconFAQ, label: "FAQ" },
+    { id: "faq", Icon: IconFAQ, label: "FAK" },
     { id: "note2", Icon: IconNote2, label: "ノート", page: "notes" },
 ];
 const SIDEBAR_BOTTOM = [

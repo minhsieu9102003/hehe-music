@@ -31,7 +31,7 @@ export default function App() {
               searchField: { isOpen: false },
               moduleMenu: {
                 isOpen: false,
-                primaryMenuLists: { title: "メインメニュー", menuItems: [{ name: "ホーム" }, { name: "社員情報" }, { name: "HRレポート" }] },
+                primaryMenuLists: { title: "メインメニュー", menuItems: [{ name: "ホーム" }, { name: "ボブ情報" }, { name: "HRレタード" }] },
                 secondaryMenuLists: { menuItems: [] },
                 tertiaryMenuLists: { menuItems: [] },
                 quaternaryMenuLists: { menuItems: [] },
@@ -42,7 +42,7 @@ export default function App() {
                 isOpen: false,
                 avatar: {},
                 menuBlocks: [{
-                  title: "片山 健太",
+                  title: "鈴木 大翔",
                   items: [
                     { id: "mypage", label: "マイページ", isTransition: true },
                     { id: "setting", label: "設定", isTransition: true },
@@ -54,8 +54,8 @@ export default function App() {
               companyLogo: { source: "" },
             }}
             myaccount={{
-              fullName: "片山 健太",
-              avatarText: "片健",
+              fullName: "鈴木 大翔",
+              avatarText: "鈴大",
               attendanceStatus: { attendanceStatus: "in", attendanceStatusName: "出勤" },
             }}
             simpleSearch={true}

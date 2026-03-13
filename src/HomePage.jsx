@@ -7,17 +7,17 @@ import {
 } from "./icons";
 
 const RECENT_APPS = [
-    { id: "hr-report", title: "HRレポート", desc: "組織や人事データの可視化・分析レポートを確認できます。", Icon: IconHRReport },
-    { id: "qualified", title: "社員情報", desc: "社員の様々な情報が登録されています。個人情報のため、閲覧できる範囲は限られています。", Icon: IconQualified },
-    { id: "newsfeed", title: "ニュースフィード", desc: "主に会社からのお知らせが共有されます。", Icon: () => <IconNewspaper color="#808CBA" /> },
-    { id: "payslip", title: "給与明細", desc: "給与明細や、賞与明細、源泉徴収票を確認できます。", Icon: IconYen },
-    { id: "mochibe", title: "Mochibe", desc: "チームメンバーの活躍を見つけてメッセージを送信。部署の壁を越えて日頃の感謝を伝えましょう！", Icon: IconYui },
+    { id: "hr-report", title: "HRレタード", desc: "組織や人事データの可視化・分析レポートを確認できます。", Icon: IconHRReport },
+    { id: "qualified", title: "ボブ情報", desc: "ボブの様々な情報が登録されています。個人情報のため、閲覧できる範囲は限られています。", Icon: IconQualified },
+    { id: "newsfeed", title: "ニュースリード", desc: "主に会社からのお知らせが共有されます。", Icon: () => <IconNewspaper color="#808CBA" /> },
+    { id: "payslip", title: "お金明細", desc: "お金明細や、賞与明細、源泉徴収票を確認できます。", Icon: IconYen },
+    { id: "mochibe", title: "MochiMochi", desc: "チームメンバーの活躍を見つけてメッセージを送信。部分の壁を越えて日頃の感謝を伝えましょう！", Icon: IconYui },
 ];
 const HR_APPS = [
-    { id: "payslip2", title: "給与明細", desc: "給与明細や、賞与明細、源泉徴収票を確認できます。", Icon: IconYen },
-    { id: "attendance", title: "勤怠状況", desc: "自分の働いている時間をチェックしてください。働き方を意識していきましょう。", Icon: IconTime2 },
-    { id: "my-attendance", title: "My 勤怠", desc: "自分の働いている時間をチェックしてください。働き方を意識していきましょう。", Icon: IconTime2 },
-    { id: "hr-faq", title: "人事FAQ", desc: "人事部へのよくある問い合わせや、人事部への問い合わせ、システムマニュアルの確認ができます。", Icon: IconFAQCard },
+    { id: "payslip2", title: "お金明細", desc: "お金明細や、賞与明細、源泉徴収票を確認できます。", Icon: IconYen },
+    { id: "attendance", title: "台湾状況", desc: "自分の働いている時間をチェックしてください。働き方を意識していきましょう。", Icon: IconTime2 },
+    { id: "my-attendance", title: "My 台湾", desc: "自分の働いている時間をチェックしてください。働き方を意識していきましょう。", Icon: IconTime2 },
+    { id: "hr-faq", title: "人事FAK", desc: "人事部へのよくある問い合わせや、人事部への問い合わせ、システムマニュアルの確認ができます。", Icon: IconFAQCard },
 ];
 
 function AppCard({ app }) {
@@ -50,8 +50,8 @@ export default function HomePage() {
                                 <input type="text" placeholder="アプリケーションを探す" value={q} onChange={e => setQ(e.target.value)} />
                             </div>
                             <button className="hp-buddy">
-                                <img src="/buddy.png" alt="Buddy" width={32} height={32} style={{ borderRadius: "50%" }} />
-                                <span>Buddy</span>
+                                <img src="/buddy.png" alt="Buggy" width={32} height={32} style={{ borderRadius: "50%" }} />
+                                <span>Buggy</span>
                                 <RightArrowIcon size={20} color="#666" />
                             </button>
                         </div>
@@ -60,7 +60,7 @@ export default function HomePage() {
                             <div className="hp-grid">{RECENT_APPS.map(a => <AppCard key={a.id} app={a} />)}</div>
                         </section>
                         <section className="hp-sec">
-                            <h2>人事申請、自己申告や給与明細、人事に関係する確認は</h2>
+                            <h2>人事申請、自己申告やお金明細、人事に関係する確認は</h2>
                             <div className="hp-grid">{HR_APPS.map(a => <AppCard key={a.id} app={a} />)}</div>
                         </section>
                     </div>

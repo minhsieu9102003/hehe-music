@@ -350,7 +350,7 @@ export default function GlobalHeader({
                                     <input
                                         type="text"
                                         className="gh-top-search__input"
-                                        placeholder="社員を検索"
+                                        placeholder="ボブを検索"
                                         readOnly
                                     />
                                 </div>
@@ -381,7 +381,7 @@ export default function GlobalHeader({
                                                     id="gh-search-input"
                                                     type="text"
                                                     className="gh-search-box__input"
-                                                    placeholder="社員を検索"
+                                                    placeholder="ボブを検索"
                                                     autoComplete="off"
                                                     value={searchValue}
                                                     onChange={(e) => handleSearchInputChange(e.target.value)}
@@ -565,7 +565,7 @@ export default function GlobalHeader({
                                             <img src={userMenu.avatar.src} alt="" />
                                         ) : (
                                             <div className="gh-avatar__monogram" style={{ background: "#45d1d1" }}>
-                                                {myaccount?.avatarText || "片健"}
+                                                {myaccount?.avatarText || "鈴大"}
                                             </div>
                                         )}
                                     </div>
