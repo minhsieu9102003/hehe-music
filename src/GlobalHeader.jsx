@@ -11,6 +11,7 @@ import {
     SpinnerIcon as IconSpinner,
 } from "./icons";
 import { NavContext } from "./NavContext";
+import { useWeather, weatherInfo } from "./WeatherContext";
 
 // ============================================================
 // CYDAS People — GlobalHeader (React UI Clone)
@@ -95,6 +96,9 @@ function NotepadIcon({ size = 32, color = "#999" }) {
 
 function ModuleMenu({ menuLists, onClickItem }) {
     const { go } = useContext(NavContext);
+    const weather = useWeather();
+    const wi = weather?.current ? weatherInfo(weather.current.weatherCode) : null;
+    const temp = weather?.current ? Math.round(weather.current.temp) : null;
     return (
         <div className="gh-module-menu">
             <div className="gh-mm-header">管理者メニュー</div>
@@ -111,6 +115,12 @@ function ModuleMenu({ menuLists, onClickItem }) {
                         <NotepadIcon size={32} color="#999" />
                     </div>
                     <span className="gh-mm-label">ノート</span>
+                </div>
+                <div className="gh-mm-item" onClick={() => { go("weather"); onClickItem?.({ name: "天気" }); }}>
+                    <div className="gh-mm-icon" style={{ fontSize: 28, lineHeight: 1 }}>
+                        {wi ? wi.icon : "🌤️"}
+                    </div>
+                    <span className="gh-mm-label">{temp !== null ? `天気 ${temp}°C` : "天気予報"}</span>
                 </div>
             </div>
         </div>
