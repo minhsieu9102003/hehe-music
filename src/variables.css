@@ -4,9 +4,9 @@
 
 :root {
     /* ─── Core colors ─── */
-    --color-primary: #007bc3;
-    --color-primary-light: #22aee5;
-    --color-primary-dark: #003993;
+    --color-primary: #5d8a72;
+    --color-primary-light: #7dc4a8;
+    --color-primary-dark: #3d6b52;
     --color-white: #ffffff;
     --color-black: #333333;
 
@@ -30,7 +30,7 @@
     --color-alice-blue-1: #f1f2f7;
     --color-alice-blue-9: #d9e2ec;
     --color-blue-bg: #f4f7fb;
-    --color-blue-hover: #e7f1fd;
+    --color-blue-hover: #eaf4ee;
 
     /* ─── Reds ─── */
     --color-red-80: #e53935;

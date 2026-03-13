@@ -159,7 +159,7 @@ export function PlayerProvider({ children }) {
         }
     }, [nowPlaying, nowPl, shuffle, shuffleOrder, shufflePos, playSongDirect]);
 
-    // onEnd handler
+    // onEnd handler — keep nowPlaying so mini player stays visible
     onEndCbRef.current = () => {
         if (!nowPlaying) return;
         const pl = playlists.find(p => p.id === nowPlaying.playlistId);
@@ -175,6 +175,7 @@ export function PlayerProvider({ children }) {
                 setShufflePos(0);
                 playSongDirect(pl.id, newOrder[0]);
             }
+            // no setNowPlaying(null) — keep mini player visible
         } else {
             const next = nowPlaying.songIdx + 1;
             if (next < pl.songs.length) {
@@ -182,6 +183,7 @@ export function PlayerProvider({ children }) {
             } else if (loop) {
                 playSongDirect(pl.id, 0);
             }
+            // no setNowPlaying(null) — keep mini player visible
         }
     };
 

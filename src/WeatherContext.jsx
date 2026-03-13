@@ -31,7 +31,7 @@ export function weatherLabel(code) { return WMO[code] || "不明"; }
 export function weatherType(code) { return WMO_TYPE[code] || "sun"; }
 
 // SVG weather icon component
-export function WeatherIcon({ code, size = 24, color = "#808CBA" }) {
+export function WeatherIcon({ code, size = 24, color = "#7da08a" }) {
     const type = weatherType(code);
     const s = size;
     const c = color;

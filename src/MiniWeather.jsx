@@ -2,10 +2,10 @@ import React, { useState, useRef, useCallback, useContext } from "react";
 import { useWeather, weatherLabel, WeatherIcon } from "./WeatherContext";
 import { NavContext } from "./NavContext";
 
-function DropIcon({ s = 13, c = "#808CBA" }) { return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" /></svg>; }
-function WindIcon({ s = 13, c = "#808CBA" }) { return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2" /></svg>; }
-function RainIcon({ s = 13, c = "#808CBA" }) { return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" /><line x1="10" y1="21" x2="9" y2="23" /><line x1="14" y1="21" x2="13" y2="23" /></svg>; }
-function UmbrellaIcon({ s = 13, c = "#808CBA" }) { return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M23 12a11.05 11.05 0 0 0-22 0zm-5 7a3 3 0 0 1-6 0v-7" /></svg>; }
+function DropIcon({ s = 13, c = "#7da08a" }) { return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" /></svg>; }
+function WindIcon({ s = 13, c = "#7da08a" }) { return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2" /></svg>; }
+function RainIcon({ s = 13, c = "#7da08a" }) { return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" /><line x1="10" y1="21" x2="9" y2="23" /><line x1="14" y1="21" x2="13" y2="23" /></svg>; }
+function UmbrellaIcon({ s = 13, c = "#7da08a" }) { return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M23 12a11.05 11.05 0 0 0-22 0zm-5 7a3 3 0 0 1-6 0v-7" /></svg>; }
 
 export default function MiniWeather() {
     const { page, go } = useContext(NavContext);
@@ -61,7 +61,7 @@ export default function MiniWeather() {
                     <span className="mw__loc">{location.name.split(",")[0]}</span>
                     <span className="mw__time">{dayLabel}{timeLabel}</span>
                     <button className="mw__hbtn" onClick={() => go("weather")} title="詳細ページ">
-                        <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#007bc3" strokeWidth="2" strokeLinecap="round"><polyline points="15 3 21 3 21 9" /><polyline points="9 21 3 21 3 15" /><line x1="21" y1="3" x2="14" y2="10" /><line x1="3" y1="21" x2="10" y2="14" /></svg>
+                        <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#5d8a72" strokeWidth="2" strokeLinecap="round"><polyline points="15 3 21 3 21 9" /><polyline points="9 21 3 21 3 15" /><line x1="21" y1="3" x2="14" y2="10" /><line x1="3" y1="21" x2="10" y2="14" /></svg>
                     </button>
                     <button className="mw__hbtn" onClick={() => setMiniOpen(false)} title="閉じる">
                         <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
@@ -73,7 +73,7 @@ export default function MiniWeather() {
                         <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke={canPrev ? "#555" : "#ddd"} strokeWidth="2.5"><polyline points="15 18 9 12 15 6" /></svg>
                     </button>
                     <div className="mw__center">
-                        <WeatherIcon code={code} size={32} color="#808CBA" />
+                        <WeatherIcon code={code} size={32} color="#7da08a" />
                         <div className="mw__temp-wrap">
                             <span className="mw__temp">{temp}°C</span>
                             <span className="mw__desc">{weatherLabel(code)}</span>
@@ -117,6 +117,6 @@ const CSS = `
 .mw__desc{font-size:10px;color:#999;margin-top:1px}
 .mw__stats{display:flex;justify-content:center;gap:14px;padding:4px 12px 10px;flex-wrap:wrap}
 .mw__s{display:flex;align-items:center;gap:4px;font-size:11px;color:#666}
-.mw__reset{display:block;width:100%;border:none;background:#fafbfc;color:#007bc3;font-size:11px;font-weight:500;padding:6px 0;cursor:pointer;transition:background .15s;font-family:inherit;border-top:1px solid #f0f0f0}
+.mw__reset{display:block;width:100%;border:none;background:#fafbfc;color:#5d8a72;font-size:11px;font-weight:500;padding:6px 0;cursor:pointer;transition:background .15s;font-family:inherit;border-top:1px solid #f0f0f0}
 .mw__reset:hover{background:#f0f6ff}
 `;

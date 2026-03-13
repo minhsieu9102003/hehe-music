@@ -9,17 +9,17 @@ function dayName(d) { return ["日", "月", "火", "水", "木", "金", "土"][n
 function isToday(d) { return new Date(d).toDateString() === new Date().toDateString(); }
 
 // Small stat icons (SVG, monochrome)
-function DropIcon({ s = 16, c = "#808CBA" }) { return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" /></svg>; }
-function WindIcon({ s = 16, c = "#808CBA" }) { return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2" /></svg>; }
-function GaugeIcon({ s = 16, c = "#808CBA" }) { return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>; }
-function SunriseIcon({ s = 16, c = "#808CBA" }) { return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 18a5 5 0 0 0-10 0" /><line x1="12" y1="9" x2="12" y2="2" /><line x1="4.22" y1="10.22" x2="5.64" y2="11.64" /><line x1="1" y1="18" x2="3" y2="18" /><line x1="21" y1="18" x2="23" y2="18" /><line x1="18.36" y1="11.64" x2="19.78" y2="10.22" /><line x1="23" y1="22" x2="1" y2="22" /><polyline points="8 6 12 2 16 6" /></svg>; }
-function SunsetIcon({ s = 16, c = "#808CBA" }) { return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 18a5 5 0 0 0-10 0" /><line x1="12" y1="2" x2="12" y2="9" /><line x1="4.22" y1="10.22" x2="5.64" y2="11.64" /><line x1="1" y1="18" x2="3" y2="18" /><line x1="21" y1="18" x2="23" y2="18" /><line x1="18.36" y1="11.64" x2="19.78" y2="10.22" /><line x1="23" y1="22" x2="1" y2="22" /><polyline points="16 6 12 10 8 6" /></svg>; }
-function UVIcon({ s = 16, c = "#808CBA" }) { return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="4" /><line x1="12" y1="2" x2="12" y2="4" /><line x1="12" y1="20" x2="12" y2="22" /><line x1="4.93" y1="4.93" x2="6.34" y2="6.34" /><line x1="17.66" y1="17.66" x2="19.07" y2="19.07" /><line x1="2" y1="12" x2="4" y2="12" /><line x1="20" y1="12" x2="22" y2="12" /></svg>; }
-function CloudIcon({ s = 16, c = "#808CBA" }) { return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" /></svg>; }
+function DropIcon({ s = 16, c = "#7da08a" }) { return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" /></svg>; }
+function WindIcon({ s = 16, c = "#7da08a" }) { return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2" /></svg>; }
+function GaugeIcon({ s = 16, c = "#7da08a" }) { return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>; }
+function SunriseIcon({ s = 16, c = "#7da08a" }) { return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 18a5 5 0 0 0-10 0" /><line x1="12" y1="9" x2="12" y2="2" /><line x1="4.22" y1="10.22" x2="5.64" y2="11.64" /><line x1="1" y1="18" x2="3" y2="18" /><line x1="21" y1="18" x2="23" y2="18" /><line x1="18.36" y1="11.64" x2="19.78" y2="10.22" /><line x1="23" y1="22" x2="1" y2="22" /><polyline points="8 6 12 2 16 6" /></svg>; }
+function SunsetIcon({ s = 16, c = "#7da08a" }) { return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 18a5 5 0 0 0-10 0" /><line x1="12" y1="2" x2="12" y2="9" /><line x1="4.22" y1="10.22" x2="5.64" y2="11.64" /><line x1="1" y1="18" x2="3" y2="18" /><line x1="21" y1="18" x2="23" y2="18" /><line x1="18.36" y1="11.64" x2="19.78" y2="10.22" /><line x1="23" y1="22" x2="1" y2="22" /><polyline points="16 6 12 10 8 6" /></svg>; }
+function UVIcon({ s = 16, c = "#7da08a" }) { return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="4" /><line x1="12" y1="2" x2="12" y2="4" /><line x1="12" y1="20" x2="12" y2="22" /><line x1="4.93" y1="4.93" x2="6.34" y2="6.34" /><line x1="17.66" y1="17.66" x2="19.07" y2="19.07" /><line x1="2" y1="12" x2="4" y2="12" /><line x1="20" y1="12" x2="22" y2="12" /></svg>; }
+function CloudIcon({ s = 16, c = "#7da08a" }) { return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" /></svg>; }
 function RefreshIcon({ s = 16, c = "#666" }) { return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10" /><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" /></svg>; }
 function MiniIcon({ s = 16, c = "#666" }) { return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 14 10 14 10 20" /><polyline points="20 10 14 10 14 4" /><line x1="14" y1="10" x2="21" y2="3" /><line x1="3" y1="21" x2="10" y2="14" /></svg>; }
-function LocIcon({ s = 16, c = "#808CBA" }) { return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>; }
-function RainIcon({ s = 16, c = "#808CBA" }) { return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" /><line x1="10" y1="21" x2="9" y2="23" /><line x1="14" y1="21" x2="13" y2="23" /></svg>; }
+function LocIcon({ s = 16, c = "#7da08a" }) { return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>; }
+function RainIcon({ s = 16, c = "#7da08a" }) { return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" /><line x1="10" y1="21" x2="9" y2="23" /><line x1="14" y1="21" x2="13" y2="23" /></svg>; }
 
 function StatCard({ icon, label, value, unit, sub }) {
     return (
@@ -63,7 +63,7 @@ export default function WeatherPage() {
                         {/* Header */}
                         <div className="wt-header">
                             <div className="wt-header__left">
-                                <WeatherIcon code={current?.weatherCode ?? 1} size={28} color="#808CBA" />
+                                <WeatherIcon code={current?.weatherCode ?? 1} size={28} color="#7da08a" />
                                 <h1>天気予報</h1>
                             </div>
                             <button className="wt-btn wt-btn--ghost" onClick={() => setMiniOpen(true)}>
@@ -88,7 +88,7 @@ export default function WeatherPage() {
                             {/* Hero */}
                             <div className="wt-hero">
                                 <div className="wt-hero__main">
-                                    <WeatherIcon code={current.weatherCode} size={56} color="#808CBA" />
+                                    <WeatherIcon code={current.weatherCode} size={56} color="#7da08a" />
                                     <div className="wt-hero__temp">
                                         <span className="wt-hero__deg">{Math.round(current.temp)}</span>
                                         <span className="wt-hero__unit">°C</span>
@@ -128,7 +128,7 @@ export default function WeatherPage() {
                                         const hr = parseInt(h.time.split("T")[1]); const isCur = hr === nowHour; return (
                                             <div key={i} className={`wt-hour ${isCur ? "is-now" : ""} ${hr < nowHour ? "is-past" : ""}`}>
                                                 <span className="wt-hour__time">{isCur ? "今" : `${hr}時`}</span>
-                                                <WeatherIcon code={h.code} size={20} color={isCur ? "#007bc3" : "#999"} />
+                                                <WeatherIcon code={h.code} size={20} color={isCur ? "#5d8a72" : "#999"} />
                                                 <span className="wt-hour__temp">{Math.round(h.temp)}°</span>
                                                 <span className="wt-hour__rain">{h.rainProb}%</span>
                                             </div>
@@ -149,7 +149,7 @@ export default function WeatherPage() {
                                                 {today && <span className="wt-day__badge">今日</span>}
                                                 {isPast && <span className="wt-day__badge wt-day__badge--past">過去</span>}
                                             </div>
-                                            <WeatherIcon code={d.code} size={22} color={today ? "#007bc3" : "#999"} />
+                                            <WeatherIcon code={d.code} size={22} color={today ? "#5d8a72" : "#999"} />
                                             <span className="wt-day__label">{weatherLabel(d.code)}</span>
                                             <div className="wt-day__temps">
                                                 <span className="wt-day__max">{Math.round(d.maxTemp)}°</span>
@@ -186,7 +186,7 @@ const CSS = `
 .wt-loc-current{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:#333}
 .wt-search-wrap{position:relative;flex:1;max-width:260px}
 .wt-search{width:100%;height:36px;border:1px solid #dcdcdc;border-radius:8px;padding:0 12px;font-size:13px;font-family:inherit;color:#333;outline:none;transition:border-color .2s}
-.wt-search:focus{border-color:#007bc3;box-shadow:0 0 0 2px rgba(0,123,195,.12)}
+.wt-search:focus{border-color:#5d8a72;box-shadow:0 0 0 2px rgba(93,138,114,.12)}
 .wt-search::placeholder{color:#bbb}
 .wt-search-dropdown{position:absolute;top:40px;left:0;right:0;background:#fff;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.1);z-index:100;max-height:240px;overflow-y:auto}
 .wt-search-item{padding:10px 14px;font-size:13px;cursor:pointer;transition:background .15s}
@@ -207,7 +207,7 @@ const CSS = `
 .wt-stat__label{font-size:11px;color:#999;font-weight:500}
 .wt-stat__value{font-size:18px;font-weight:600;color:#333}
 .wt-stat__value small{font-size:12px;color:#999;margin-left:2px;font-weight:400}
-.wt-stat__sub{font-size:11px;color:#808CBA}
+.wt-stat__sub{font-size:11px;color:#7da08a}
 .wt-sun-row{display:flex;gap:24px;justify-content:center;margin-bottom:28px}
 .wt-sun{font-size:13px;color:#666;display:flex;align-items:center;gap:6px}
 .wt-sun b{color:#333;margin-left:2px}
@@ -215,11 +215,11 @@ const CSS = `
 .wt-hourly-scroll{overflow-x:auto;margin-bottom:28px;padding-bottom:4px}
 .wt-hourly{display:flex;gap:2px;min-width:max-content}
 .wt-hour{display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 12px;border-radius:8px;min-width:56px;transition:background .15s}
-.wt-hour.is-now{background:#e7f1fd}
+.wt-hour.is-now{background:#eaf4ee}
 .wt-hour.is-past{opacity:.45}
 .wt-hour__time{font-size:11px;color:#666}
 .wt-hour__temp{font-size:14px;font-weight:600;color:#333}
-.wt-hour__rain{font-size:10px;color:#808CBA}
+.wt-hour__rain{font-size:10px;color:#7da08a}
 .wt-daily{display:flex;flex-direction:column;gap:2px}
 .wt-day{display:flex;align-items:center;padding:12px 16px;border-radius:8px;gap:12px;transition:background .15s}
 .wt-day:hover{background:#f9fafb}
@@ -227,7 +227,7 @@ const CSS = `
 .wt-day.is-past{opacity:.55}
 .wt-day__date{display:flex;align-items:center;gap:4px;width:120px;flex-shrink:0;font-size:13px;color:#333;font-weight:500}
 .wt-day__dow{font-size:12px;color:#999}
-.wt-day__badge{font-size:10px;background:#007bc3;color:#fff;padding:1px 6px;border-radius:4px;margin-left:4px}
+.wt-day__badge{font-size:10px;background:#5d8a72;color:#fff;padding:1px 6px;border-radius:4px;margin-left:4px}
 .wt-day__badge--past{background:#ccc}
 .wt-day__label{font-size:12px;color:#666;width:90px;flex-shrink:0}
 .wt-day__temps{display:flex;gap:8px;width:70px;flex-shrink:0}

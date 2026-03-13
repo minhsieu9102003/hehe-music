@@ -559,7 +559,7 @@ export default function GlobalHeader({
                                             <div className="gh-user-status">
                                                 <span
                                                     className="gh-user-status__dot"
-                                                    style={{ backgroundColor: "#007bc3" }}
+                                                    style={{ backgroundColor: "#5d8a72" }}
                                                 />
                                                 <span className="gh-user-status__name">
                                                     {myaccount.attendanceStatus.attendanceStatusName}
@@ -580,7 +580,7 @@ export default function GlobalHeader({
                                         {userMenu?.avatar?.src ? (
                                             <img src={userMenu.avatar.src} alt="" />
                                         ) : (
-                                            <div className="gh-avatar__monogram" style={{ background: "#45d1d1" }}>
+                                            <div className="gh-avatar__monogram" style={{ background: "#6db89a" }}>
                                                 {myaccount?.avatarText || "鈴大"}
                                             </div>
                                         )}
@@ -818,7 +818,7 @@ const globalHeaderStyles = `
   flex-shrink: 0;
 }
 .gh-search-header__back:hover {
-  background-color: #e7f1fd;
+  background-color: #eaf4ee;
 }
 
 /* Search box */
@@ -905,7 +905,7 @@ const globalHeaderStyles = `
   transition: background 0.15s;
 }
 .gh-result-employee:hover {
-  background: #e7f1fd;
+  background: #eaf4ee;
 }
 .gh-result-employee__avatar {
   width: 56px;
@@ -1004,12 +1004,12 @@ const globalHeaderStyles = `
 }
 .gh-icon-btn:hover {
   background-color: #f1f2f7;
-  color: #007bc3;
+  color: #5d8a72;
 }
 .gh-icon-btn.active,
 .gh-icon-btn.is-active {
   background-color: #f1f2f7;
-  color: #007bc3;
+  color: #5d8a72;
 }
 
 /* ─── Notification ─── */
@@ -1256,7 +1256,7 @@ const globalHeaderStyles = `
   transition: border-color 0.15s;
 }
 .gh.v2-0 .gh-avatar:hover {
-  border-color: #007bc3;
+  border-color: #5d8a72;
 }
 .gh-avatar img {
   width: 100%;
@@ -1269,7 +1269,7 @@ const globalHeaderStyles = `
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #45d1d1;
+  background: #6db89a;
   color: #fff;
   font-size: 11px;
   font-weight: 700;

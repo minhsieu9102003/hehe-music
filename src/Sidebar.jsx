@@ -42,7 +42,7 @@ export default function Sidebar({ activeId = "home" }) {
                                 onClick={() => handleClick(item)}
                                 title={item.label}
                             >
-                                <item.Icon color={active ? "#808CBA" : "#999"} size={32} />
+                                <item.Icon color={active ? "#7da08a" : "#999"} size={32} />
                             </div>
                         );
                     })}
@@ -57,7 +57,7 @@ export default function Sidebar({ activeId = "home" }) {
                             onClick={() => handleClick(item)}
                             title={item.label}
                         >
-                            <item.Icon color={active ? "#808CBA" : "#999"} size={32} />
+                            <item.Icon color={active ? "#7da08a" : "#999"} size={32} />
                         </div>
                     );
                 })}
@@ -72,6 +72,6 @@ const sidebarStyles = `
 .hp-sb__sep{width:36px;height:1px;background:#e0e0e0;margin:8px 0}
 .hp-sb__item{width:64px;height:64px;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s;flex-shrink:0}
 .hp-sb__item:hover{background:#f1f2f7}
-.hp-sb__item.active{background:#e7f1fd}
+.hp-sb__item.active{background:#eaf4ee}
 @media(max-width:767px){.hp-sb{display:none}}
 `;

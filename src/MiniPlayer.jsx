@@ -2,7 +2,7 @@ import React, { useState, useRef, useCallback, useContext } from "react";
 import { usePlayer } from "./PlayerContext";
 import { NavContext } from "./NavContext";
 
-const COLORS = ["#808CBA", "#E8927C", "#7EC8A0", "#C490D1", "#6BB8D6", "#D4A85C", "#E07B9B", "#8CABD4"];
+const COLORS = ["#7da08a", "#E8927C", "#7EC8A0", "#C490D1", "#6BB8D6", "#D4A85C", "#E07B9B", "#8CABD4"];
 
 function formatTime(sec) {
     if (!sec || isNaN(sec)) return "0:00";
@@ -21,7 +21,7 @@ const MiniIcon = {
     SkipF: ({ s = 14, c = "#666" }) => <svg width={s} height={s} viewBox="0 0 24 24" fill={c}><polygon points="5 4 15 12 5 20" /><line x1="19" y1="5" x2="19" y2="19" stroke={c} strokeWidth="2" /></svg>,
     SkipB: ({ s = 14, c = "#666" }) => <svg width={s} height={s} viewBox="0 0 24 24" fill={c}><polygon points="19 20 9 12 19 4" /><line x1="5" y1="5" x2="5" y2="19" stroke={c} strokeWidth="2" /></svg>,
     Vol: ({ s = 14, c = "#666" }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" /></svg>,
-    Music: ({ s = 16, c = "#007bc3" }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg>,
+    Music: ({ s = 16, c = "#5d8a72" }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg>,
     X: ({ s = 14, c = "#999" }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>,
 };
 
@@ -82,7 +82,7 @@ export default function MiniPlayer() {
                         <span className="mp__song">{nowSong.title}</span>
                         <span className="mp__pl">{nowPl?.name}</span>
                     </div>
-                    <button className="mp__close" onClick={() => setNowPlaying(null)} title="閉じる">
+                    <button className="mp__close" onClick={() => setNowPlaying(null)} title="é–‰ã˜ã‚‹">
                         <MiniIcon.X />
                     </button>
                 </div>
@@ -123,7 +123,7 @@ export default function MiniPlayer() {
                             onChange={e => setVol(Number(e.target.value))}
                         />
                     </div>
-                    <button className="mp__goto" onClick={() => go("playlist")} title="プレイリストへ">
+                    <button className="mp__goto" onClick={() => go("playlist")} title="ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã¸">
                         <MiniIcon.Music s={14} />
                     </button>
                 </div>
@@ -144,18 +144,18 @@ const MINI_CSS = `
 .mp__close:hover{background:#f0f2f5}
 .mp__progress-row{padding:0 12px}
 .mp__progress{width:100%;height:3px;-webkit-appearance:none;appearance:none;background:#e0e0e0;border-radius:2px;outline:none;cursor:pointer}
-.mp__progress::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;background:#007bc3;border-radius:50%;cursor:pointer}
+.mp__progress::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;background:#5d8a72;border-radius:50%;cursor:pointer}
 .mp__controls{display:flex;align-items:center;justify-content:space-between;padding:6px 12px}
 .mp__btns{display:flex;align-items:center;gap:8px}
 .mp__cbtn{width:28px;height:28px;border:none;background:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s}
 .mp__cbtn:hover{background:#f0f2f5}
-.mp__play{width:32px;height:32px;border:none;background:#007bc3;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s}
-.mp__play:hover{background:#0069a8}
+.mp__play{width:32px;height:32px;border:none;background:#5d8a72;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s}
+.mp__play:hover{background:#4a7560}
 .mp__remaining{font-size:11px;color:#999;font-variant-numeric:tabular-nums}
 .mp__bottom{display:flex;align-items:center;justify-content:space-between;padding:4px 12px 10px}
 .mp__vol-row{display:flex;align-items:center;gap:6px}
 .mp__vol{width:70px;height:3px;-webkit-appearance:none;appearance:none;background:#e0e0e0;border-radius:2px;outline:none;cursor:pointer}
 .mp__vol::-webkit-slider-thumb{-webkit-appearance:none;width:8px;height:8px;background:#666;border-radius:50%;cursor:pointer}
-.mp__goto{width:28px;height:28px;border:none;background:#e7f1fd;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s}
-.mp__goto:hover{background:#d4e6f9}
+.mp__goto{width:28px;height:28px;border:none;background:#eaf4ee;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s}
+.mp__goto:hover{background:#d4e6d9}
 `;
