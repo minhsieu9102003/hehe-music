@@ -8,6 +8,7 @@ import FakeLoadingPage from "./FakeLoadingPage";
 import RgScopePage from "./RgScopePage";
 import DocsPage from "./DocsPage";
 import LinksPage from "./LinksPage";
+import PullRequestPage from "./PullRequestPage";
 import { NavContext } from "./NavContext";
 import { PlayerProvider } from "./PlayerContext";
 import { NoteProvider } from "./NoteContext";
@@ -28,6 +29,7 @@ export default function App() {
       case "rg-scope": return <RgScopePage />;
       case "docs": return <DocsPage />;
       case "links": return <LinksPage />;
+      case "pr-tracker": return <PullRequestPage />;
       default: return <HomePage />;
     }
   };

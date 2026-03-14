@@ -146,6 +146,12 @@ function ModuleMenu({ menuLists, onClickItem }) {
                     </div>
                     <span className="gh-mm-label">リンク集</span>
                 </div>
+                <div className="gh-mm-item" onClick={() => { go("pr-tracker"); onClickItem?.({ name: "PRトラッカー" }); }}>
+                    <div className="gh-mm-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="18" r="3" /><circle cx="6" cy="6" r="3" /><path d="M13 6h3a2 2 0 0 1 2 2v7" /><line x1="6" y1="9" x2="6" y2="21" /></svg>
+                    </div>
+                    <span className="gh-mm-label">PRトラッカー</span>
+                </div>
             </div>
         </div>
     );
