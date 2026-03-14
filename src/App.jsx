@@ -6,6 +6,7 @@ import NotePage from "./NotePage";
 import WeatherPage from "./WeatherPage";
 import FakeLoadingPage from "./FakeLoadingPage";
 import RgScopePage from "./RgScopePage";
+import DocsPage from "./DocsPage";
 import { NavContext } from "./NavContext";
 import { PlayerProvider } from "./PlayerContext";
 import { NoteProvider } from "./NoteContext";
@@ -24,6 +25,7 @@ export default function App() {
       case "weather": return <WeatherPage />;
       case "fake-loading": return <FakeLoadingPage />;
       case "rg-scope": return <RgScopePage />;
+      case "docs": return <DocsPage />;
       default: return <HomePage />;
     }
   };
