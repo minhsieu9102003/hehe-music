@@ -140,6 +140,12 @@ function ModuleMenu({ menuLists, onClickItem }) {
                     </div>
                     <span className="gh-mm-label">ドキュメント</span>
                 </div>
+                <div className="gh-mm-item" onClick={() => { go("links"); onClickItem?.({ name: "リンク集" }); }}>
+                    <div className="gh-mm-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="1.5" strokeLinecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg>
+                    </div>
+                    <span className="gh-mm-label">リンク集</span>
+                </div>
             </div>
         </div>
     );
@@ -1372,4 +1378,3 @@ const globalHeaderStyles = `
   color: #666;
 }
 `;
-    
