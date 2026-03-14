@@ -64,13 +64,22 @@ async function fetchPRsForMember(token, author) {
     const allPRs = [];
 
     for (let page = 1; page <= PAGES; page++) {
-        const url = `https://api.github.com/repos/${REPO}/pulls?state=closed&per_page=${PER_PAGE}&page=${page}&sort=updated&direction=desc`;
+        // Use Search API — works even with limited token scope, filters by author server-side
+        const q = encodeURIComponent(`repo:${REPO} is:pr is:closed author:${author}`);
+        const url = `https://api.github.com/search/issues?q=${q}&per_page=${PER_PAGE}&page=${page}&sort=updated&order=desc`;
         const res = await fetch(url, { headers });
-        if (!res.ok) throw new Error(`API Error ${res.status}: ${res.statusText}`);
+        if (!res.ok) {
+            const body = await res.json().catch(() => ({}));
+            if (res.status === 401) throw new Error("トークンが無効です。再設定してください。");
+            if (res.status === 403) throw new Error("アクセス拒否: Organization の Token 承認が必要かもしれません。GitHub Settings → Tokens → Grant access to CYDASCOM");
+            if (res.status === 404) throw new Error("リポジトリが見つかりません。トークンに repo 権限があるか確認してください。");
+            throw new Error(`API Error ${res.status}: ${body.message || res.statusText}`);
+        }
         const data = await res.json();
-        const memberPRs = data.filter(pr => pr.user?.login?.toLowerCase() === author.toLowerCase() && pr.merged_at);
-        allPRs.push(...memberPRs);
-        if (data.length < PER_PAGE) break;
+        allPRs.push(...(data.items || []));
+        if (!data.items || data.items.length < PER_PAGE) break;
+        // Search API rate limit: 30 req/min — small pause
+        await new Promise(r => setTimeout(r, 500));
     }
     return allPRs;
 }
@@ -204,13 +213,15 @@ export default function PullRequestPage() {
                 for (const pr of memberPRs) {
                     if (existingIds.has(pr.number)) continue;
                     if (blacklist.includes(pr.number)) { existingIds.add(pr.number); continue; }
+                    // Search API: closed_at is on the issue, merged_at is in pull_request sub-object
+                    const closedAt = pr.closed_at || pr.pull_request?.merged_at;
                     setProgress(`#${pr.number} のファイル一覧を取得中...`);
                     const files = await fetchPRFiles(token, pr.number);
                     newPrs.push({
                         number: pr.number,
                         title: pr.title,
                         html_url: pr.html_url,
-                        closed_at: pr.closed_at || pr.merged_at,
+                        closed_at: closedAt,
                         author: m.author,
                         authorName: m.name,
                         files,
