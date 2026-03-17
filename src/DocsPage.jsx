@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import Sidebar from "./Sidebar";
+import { ACCESS_CONTROL_CATEGORY } from "./DocsAccessControl";
 
 // ═══════════════════════════════════════════════════
 // DOCS DATA — dễ cập nhật: thêm section/topic vào đây
 // ═══════════════════════════════════════════════════
-const CATEGORIES = [
+let CATEGORIES = [
     {
         id: "architecture",
         title: "Kiến trúc",
@@ -452,6 +453,9 @@ WHERE department_id = 5 AND is_active = 1;
     },
 ];
 
+// Merge external module docs
+CATEGORIES.push(ACCESS_CONTROL_CATEGORY);
+
 // ═══════════════════════════════════════════════════
 // Diagram components (SVG)
 // ═══════════════════════════════════════════════════
@@ -577,6 +581,29 @@ const DIAGRAMS = {
 };
 
 // ═══════════════════════════════════════════════════
+// CodeTabs — PHP vs Node.js comparison
+// ═══════════════════════════════════════════════════
+function CodeTabs({ block }) {
+    const [tab, setTab] = useState("php");
+    return (
+        <div className="dc-codetabs">
+            <div className="dc-codetabs__header">
+                <div className="dc-codetabs__label">{block.label}</div>
+                <div className="dc-codetabs__tabs">
+                    <button className={`dc-codetabs__tab ${tab === "php" ? "is-active" : ""}`} onClick={() => setTab("php")}>CakePHP</button>
+                    <button className={`dc-codetabs__tab ${tab === "js" ? "is-active" : ""}`} onClick={() => setTab("js")}>Node.js</button>
+                </div>
+            </div>
+            {block.desc && <div className="dc-codetabs__desc">{block.desc}</div>}
+            <div className="dc-code-wrap dc-codetabs__code">
+                <div className="dc-code-lang">{tab === "php" ? "php" : "javascript"}</div>
+                <pre className="dc-code"><code>{tab === "php" ? block.php : block.js}</code></pre>
+            </div>
+        </div>
+    );
+}
+
+// ═══════════════════════════════════════════════════
 // Content Renderers
 // ═══════════════════════════════════════════════════
 function renderBlock(block, i) {
@@ -633,6 +660,8 @@ function renderBlock(block, i) {
                     </table>
                 </div>
             );
+        case "codetabs":
+            return <CodeTabs key={i} block={block} />;
         default: return null;
     }
 }
@@ -644,6 +673,7 @@ function CatIcon({ type, s = 20, c = "#7da08a" }) {
         case "vue": return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2" /><polyline points="2 17 12 22 22 17" /><polyline points="2 12 12 17 22 12" /></svg>;
         case "php": return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>;
         case "db": return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3" /><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" /><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" /></svg>;
+        case "lock": return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>;
         default: return null;
     }
 }
@@ -837,4 +867,17 @@ const CSS = `
 .dc-diagram--wide{min-width:500px}
 .dc-diag-rect{animation:dcDiagIn .4s ease both}
 @keyframes dcDiagIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* CodeTabs */
+.dc-codetabs{margin:16px 0;border:1px solid #e8e8e8;border-radius:10px;overflow:hidden}
+.dc-codetabs__header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#f5f7fa;border-bottom:1px solid #e8e8e8;gap:12px;flex-wrap:wrap}
+.dc-codetabs__label{font-size:14px;font-weight:700;color:#333;font-family:"Fira Code","Consolas",monospace}
+.dc-codetabs__tabs{display:flex;gap:4px;flex-shrink:0}
+.dc-codetabs__tab{border:none;background:#e8eaee;border-radius:6px;padding:4px 12px;font-size:11px;font-weight:600;color:#777;cursor:pointer;font-family:inherit;transition:all .15s}
+.dc-codetabs__tab:hover{background:#ddd;color:#555}
+.dc-codetabs__tab.is-active{background:#5d8a72;color:#fff}
+.dc-codetabs__desc{padding:10px 16px 0;font-size:12px;color:#888;line-height:1.5}
+.dc-codetabs__code{border:none;border-radius:0;margin:0}
+.dc-codetabs__code .dc-code-lang{border-radius:0}
+.dc-codetabs__code .dc-code{max-height:500px;overflow-y:auto}
 `;

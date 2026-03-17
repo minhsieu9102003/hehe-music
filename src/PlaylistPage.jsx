@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useContext } from "react";
 import Sidebar from "./Sidebar";
 import { SearchIcon } from "./icons";
+import { NavContext } from "./NavContext";
 
 // ═══════════════════════════════════════════════════
 // Helpers
@@ -60,6 +61,9 @@ const Icon = {
     Songs: ({ s = 16, c = "#999" }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round"><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></svg>,
     Link: ({ s = 16, c = "#999" }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg>,
     Vol: ({ s = 18, c = "#666" }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" /></svg>,
+    Shuffle: ({ s = 16, c = "#999" }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 3 21 3 21 8" /><line x1="4" y1="20" x2="21" y2="3" /><polyline points="21 16 21 21 16 21" /><line x1="15" y1="15" x2="21" y2="21" /><line x1="4" y1="4" x2="9" y2="9" /></svg>,
+    Loop: ({ s = 16, c = "#999" }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="17 1 21 5 17 9" /><path d="M3 11V9a4 4 0 0 1 4-4h14" /><polyline points="7 23 3 19 7 15" /><path d="M21 13v2a4 4 0 0 1-4 4H3" /></svg>,
+    Mini: ({ s = 16, c = "#999" }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 14 10 14 10 20" /><polyline points="20 10 14 10 14 4" /><line x1="14" y1="10" x2="21" y2="3" /><line x1="3" y1="21" x2="10" y2="14" /></svg>,
 };
 
 // ═══════════════════════════════════════════════════
@@ -178,6 +182,7 @@ const DEFAULT_PLAYLISTS = [
 ];
 
 export default function PlaylistPage() {
+    const { go } = useContext(NavContext);
     const [playlists, setPlaylists] = useState(() => {
         const saved = loadPlaylists();
         return saved.length > 0 ? saved : DEFAULT_PLAYLISTS;
@@ -198,20 +203,37 @@ export default function PlaylistPage() {
     const yt = useYouTubePlayer();
     const [nowPlaying, setNowPlaying] = useState(null); // { playlistId, songIdx }
     const [delSong, setDelSong] = useState(null); // { plId, songId }
+    const [shuffle, setShuffle] = useState(false);
+    const [loop, setLoop] = useState(false); // loop current song
 
     // Save to localStorage
     useEffect(() => { savePlaylists(playlists); }, [playlists]);
 
-    // Handle song end → play next
+    // Handle song end → play next (with shuffle/loop)
     yt.onEnd(() => {
         if (!nowPlaying) return;
         const pl = playlists.find(p => p.id === nowPlaying.playlistId);
         if (!pl) return;
+
+        // Loop: replay same song
+        if (loop) {
+            playSong(pl.id, nowPlaying.songIdx);
+            return;
+        }
+
+        // Shuffle: random song (avoid same)
+        if (shuffle && pl.songs.length > 1) {
+            let next;
+            do { next = Math.floor(Math.random() * pl.songs.length); }
+            while (next === nowPlaying.songIdx);
+            playSong(pl.id, next);
+            return;
+        }
+
+        // Normal: next song
         const next = nowPlaying.songIdx + 1;
         if (next < pl.songs.length) {
             playSong(pl.id, next);
-        } else {
-            setNowPlaying(null);
         }
     });
 
@@ -419,6 +441,9 @@ export default function PlaylistPage() {
                     </div>
                     <div className="pl-player__center">
                         <div className="pl-player__controls">
+                            <button className={`pl-player__cbtn ${shuffle ? "pl-player__cbtn--active" : ""}`} onClick={() => setShuffle(!shuffle)} title="シャッフル">
+                                <Icon.Shuffle s={14} c={shuffle ? "#5d8a72" : "#999"} />
+                            </button>
                             <button className="pl-player__cbtn" onClick={() => nowPlaying && playSong(nowPlaying.playlistId, Math.max(0, nowPlaying.songIdx - 1))}>
                                 <Icon.SkipB s={16} c="#666" />
                             </button>
@@ -431,6 +456,9 @@ export default function PlaylistPage() {
                                 if (next < nowPl.songs.length) playSong(nowPl.id, next);
                             }}>
                                 <Icon.SkipF s={16} c="#666" />
+                            </button>
+                            <button className={`pl-player__cbtn ${loop ? "pl-player__cbtn--active" : ""}`} onClick={() => setLoop(!loop)} title="リピート">
+                                <Icon.Loop s={14} c={loop ? "#5d8a72" : "#999"} />
                             </button>
                         </div>
                         <div className="pl-player__progress-row">
@@ -455,6 +483,9 @@ export default function PlaylistPage() {
                             value={yt.volume}
                             onChange={e => yt.setVol(Number(e.target.value))}
                         />
+                        <button className="pl-player__cbtn pl-player__mini-btn" onClick={() => go("home")} title="最小化してホームへ">
+                            <Icon.Mini s={14} c="#999" />
+                        </button>
                     </div>
                 </div>
             )}
@@ -599,6 +630,9 @@ const CSS = `
 .pl-player__controls{display:flex;align-items:center;gap:16px}
 .pl-player__cbtn{width:32px;height:32px;border:none;background:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s}
 .pl-player__cbtn:hover{background:#f0f2f5}
+.pl-player__cbtn--active{background:#eaf4ee}
+.pl-player__cbtn--active:hover{background:#dceee3}
+.pl-player__mini-btn{margin-left:8px}
 .pl-player__play{width:36px;height:36px;border:none;background:#5d8a72;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s}
 .pl-player__play:hover{background:#4a7560}
 .pl-player__progress-row{display:flex;align-items:center;gap:8px;width:100%}
