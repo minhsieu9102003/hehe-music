@@ -126,11 +126,22 @@ export function PlayerProvider({ children }) {
     const skipNext = useCallback(() => {
         if (!nowPlaying || !nowPl) return;
         if (shuffle) {
+            // Nếu chưa có shuffleOrder hoặc rỗng → tạo mới
+            if (shuffleOrder.length !== nowPl.songs.length) {
+                const newOrder = fisherYatesShuffle(nowPl.songs.length);
+                const pos = newOrder.indexOf(nowPlaying.songIdx);
+                [newOrder[0], newOrder[pos]] = [newOrder[pos], newOrder[0]];
+                setShuffleOrder(newOrder);
+                setShufflePos(1);
+                if (newOrder[1] !== undefined) playSongDirect(nowPl.id, newOrder[1]);
+                return;
+            }
             const nextPos = shufflePos + 1;
             if (nextPos < shuffleOrder.length) {
                 setShufflePos(nextPos);
                 playSongDirect(nowPl.id, shuffleOrder[nextPos]);
-            } else if (loop) {
+            } else {
+                // Hết shuffle order → tạo lại
                 const newOrder = fisherYatesShuffle(nowPl.songs.length);
                 setShuffleOrder(newOrder);
                 setShufflePos(0);
@@ -165,17 +176,27 @@ export function PlayerProvider({ children }) {
         const pl = playlists.find(p => p.id === nowPlaying.playlistId);
         if (!pl || pl.songs.length === 0) return;
         if (shuffle) {
+            // Nếu chưa có shuffleOrder → tạo mới
+            if (shuffleOrder.length !== pl.songs.length) {
+                const newOrder = fisherYatesShuffle(pl.songs.length);
+                const pos = newOrder.indexOf(nowPlaying.songIdx);
+                [newOrder[0], newOrder[pos]] = [newOrder[pos], newOrder[0]];
+                setShuffleOrder(newOrder);
+                setShufflePos(1);
+                if (newOrder[1] !== undefined) playSongDirect(pl.id, newOrder[1]);
+                return;
+            }
             const nextPos = shufflePos + 1;
             if (nextPos < shuffleOrder.length) {
                 setShufflePos(nextPos);
                 playSongDirect(pl.id, shuffleOrder[nextPos]);
-            } else if (loop) {
+            } else {
+                // Hết shuffle order → tạo lại
                 const newOrder = fisherYatesShuffle(pl.songs.length);
                 setShuffleOrder(newOrder);
                 setShufflePos(0);
                 playSongDirect(pl.id, newOrder[0]);
             }
-            // no setNowPlaying(null) — keep mini player visible
         } else {
             const next = nowPlaying.songIdx + 1;
             if (next < pl.songs.length) {
@@ -183,7 +204,6 @@ export function PlayerProvider({ children }) {
             } else if (loop) {
                 playSongDirect(pl.id, 0);
             }
-            // no setNowPlaying(null) — keep mini player visible
         }
     };
 
