@@ -1,24 +1,14 @@
 {
-  "rewrites": [
+  "framework": "vite",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "routes": [
     {
-      "source": "/api/inv1/:path*",
-      "destination": "https://inv.nadeko.net/api/v1/:path*"
+      "handle": "filesystem"
     },
     {
-      "source": "/api/inv2/:path*",
-      "destination": "https://invidious.fdn.fr/api/v1/:path*"
-    },
-    {
-      "source": "/api/inv3/:path*",
-      "destination": "https://invidious.nerdvpn.de/api/v1/:path*"
-    },
-    {
-      "source": "/api/piped1/:path*",
-      "destination": "https://pipedapi.kavin.rocks/:path*"
-    },
-    {
-      "source": "/api/piped2/:path*",
-      "destination": "https://pipedapi.adminforge.de/:path*"
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
