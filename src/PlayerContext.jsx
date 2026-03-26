@@ -20,49 +20,61 @@ export function uid() { return _nextId++; }
 const PlayerContext = createContext(null);
 export function usePlayer() { return useContext(PlayerContext); }
 
-// ─── Mobile detect: userAgent + screen width fallback ───
+// ─── Mobile detect ───
 const isMobile = typeof navigator !== "undefined" && (
     /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent)
     || (window.innerWidth <= 768 && "ontouchstart" in window)
 );
 
-// ─── Piped API: lấy audio stream URL từ YouTube videoId ───
+// ─── Piped API: extract audio stream URL from YouTube videoId ───
 const PIPED_INSTANCES = [
     "https://pipedapi.kavin.rocks",
     "https://pipedapi.adminforge.de",
-    "https://pipedapi.in.projectsegfau.lt",
+    "https://watchapi.whatever.social",
+    "https://pipedapi.leptons.xyz",
 ];
 
 async function getAudioUrl(videoId) {
     for (const api of PIPED_INSTANCES) {
         try {
-            const res = await fetch(`${api}/streams/${videoId}`);
-            if (!res.ok) continue;
+            console.log(`[Audio] Trying ${api}/streams/${videoId}`);
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 6000);
+            const res = await fetch(`${api}/streams/${videoId}`, {
+                signal: controller.signal
+            });
+            clearTimeout(timeout);
+            if (!res.ok) { console.log(`[Audio] ${api} returned ${res.status}`); continue; }
             const data = await res.json();
-            // Tìm audio stream chất lượng tốt nhất
-            const streams = data.audioStreams || [];
-            if (streams.length === 0) continue;
-            // Ưu tiên opus > m4a, bitrate cao nhất
-            const sorted = streams
-                .filter(s => s.url)
-                .sort((a, b) => (b.bitrate || 0) - (a.bitrate || 0));
-            if (sorted.length > 0) return sorted[0].url;
-        } catch { /* try next instance */ }
+            const streams = (data.audioStreams || []).filter(s => s.url);
+            if (streams.length === 0) { console.log(`[Audio] ${api} no audio streams`); continue; }
+            // Sort: prefer m4a/mp4 (better mobile compat) then highest bitrate
+            const sorted = streams.sort((a, b) => {
+                const aM4a = a.mimeType?.includes("mp4") ? 1 : 0;
+                const bM4a = b.mimeType?.includes("mp4") ? 1 : 0;
+                if (aM4a !== bM4a) return bM4a - aM4a;
+                return (b.bitrate || 0) - (a.bitrate || 0);
+            });
+            console.log(`[Audio] Got stream from ${api}:`, sorted[0].mimeType, sorted[0].bitrate);
+            return sorted[0].url;
+        } catch (e) {
+            console.log(`[Audio] ${api} failed:`, e.message);
+        }
     }
+    console.log("[Audio] All Piped instances failed");
     return null;
 }
 
 // ─── Media Session: lock screen controls ───
-function updateMediaSession(title, artist, onPlay, onPause, onNext, onPrev) {
+function updateMediaSession(title, artist, handlers) {
     if (!("mediaSession" in navigator)) return;
-    navigator.mediaSession.metadata = new MediaMetadata({
-        title: title || "Unknown",
-        artist: artist || "",
-    });
-    navigator.mediaSession.setActionHandler("play", onPlay);
-    navigator.mediaSession.setActionHandler("pause", onPause);
-    navigator.mediaSession.setActionHandler("nexttrack", onNext);
-    navigator.mediaSession.setActionHandler("previoustrack", onPrev);
+    try {
+        navigator.mediaSession.metadata = new MediaMetadata({ title: title || "Unknown", artist: artist || "" });
+        navigator.mediaSession.setActionHandler("play", handlers.play);
+        navigator.mediaSession.setActionHandler("pause", handlers.pause);
+        navigator.mediaSession.setActionHandler("nexttrack", handlers.next);
+        navigator.mediaSession.setActionHandler("previoustrack", handlers.prev);
+    } catch { /* some browsers don't support all handlers */ }
 }
 
 export function PlayerProvider({ children }) {
@@ -75,39 +87,44 @@ export function PlayerProvider({ children }) {
     const intervalRef = useRef(null);
     const stateRef = useRef({});
 
-    // ─── YouTube Player (desktop only) ───
+    // ─── YouTube (desktop) ───
     const ytRef = useRef(null);
     const containerRef = useRef(null);
 
-    // ─── Audio Element (mobile only) ───
+    // ─── Audio (mobile) ───
     const audioRef = useRef(null);
+    const audioUnlocked = useRef(false);
+    const [audioLoading, setAudioLoading] = useState(false);
+    // Fallback: nếu Piped fail 3 lần liên tiếp → dùng YouTube iframe trên mobile
+    const pipedFailCount = useRef(0);
+    const [useFallbackYT, setUseFallbackYT] = useState(false);
 
+    // ─── Init ───
     useEffect(() => {
-        if (isMobile) {
-            // Mobile: tạo audio element
+        if (isMobile && !useFallbackYT) {
             const audio = new Audio();
             audio.volume = 0.8;
+            audio.preload = "auto";
             audioRef.current = audio;
 
             audio.addEventListener("playing", () => setPlaying(true));
             audio.addEventListener("pause", () => setPlaying(false));
             audio.addEventListener("ended", () => handleEnd());
-            audio.addEventListener("loadedmetadata", () => {
-                setDuration(audio.duration || 0);
+            audio.addEventListener("loadedmetadata", () => setDuration(audio.duration || 0));
+            audio.addEventListener("error", (e) => {
+                console.log("[Audio] Playback error:", e);
+                setAudioLoading(false);
             });
 
-            // Update currentTime
             const timer = setInterval(() => {
-                if (audio && !audio.paused) {
-                    setCurrentTime(audio.currentTime || 0);
-                }
+                if (audio && !audio.paused) setCurrentTime(audio.currentTime || 0);
             }, 500);
             intervalRef.current = timer;
-
             setReady(true);
+
             return () => { clearInterval(timer); audio.pause(); audio.src = ""; };
         } else {
-            // Desktop: YouTube iframe
+            // Desktop or fallback
             if (window.YT && window.YT.Player) { initYT(); return; }
             const tag = document.createElement("script");
             tag.src = "https://www.youtube.com/iframe_api";
@@ -115,7 +132,7 @@ export function PlayerProvider({ children }) {
             window.onYouTubeIframeAPIReady = initYT;
             return () => { clearInterval(intervalRef.current); };
         }
-    }, []);
+    }, [useFallbackYT]);
 
     function initYT() {
         if (ytRef.current) return;
@@ -135,69 +152,96 @@ export function PlayerProvider({ children }) {
                     } else {
                         clearInterval(intervalRef.current);
                     }
-                    if (e.data === window.YT.PlayerState.ENDED) {
-                        handleEnd();
-                    }
+                    if (e.data === window.YT.PlayerState.ENDED) handleEnd();
                 },
             },
         });
     }
 
-    // ─── Unified controls ───
-    const [audioLoading, setAudioLoading] = useState(false);
+    const useAudio = isMobile && !useFallbackYT;
+
+    // ─── Unlock audio on first user gesture (mobile) ───
+    function unlockAudio() {
+        if (!useAudio || audioUnlocked.current || !audioRef.current) return;
+        // Phát 1 giây im lặng để "mở khóa" audio context
+        const a = audioRef.current;
+        const silentSrc = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=";
+        a.src = silentSrc;
+        a.play().then(() => {
+            a.pause();
+            a.currentTime = 0;
+            audioUnlocked.current = true;
+            console.log("[Audio] Unlocked");
+        }).catch(() => { });
+    }
+
+    // ─── Load & Play ───
+    async function loadVideoMobile(videoId) {
+        const audio = audioRef.current;
+        if (!audio) return false;
+
+        unlockAudio();
+        setAudioLoading(true);
+
+        const url = await getAudioUrl(videoId);
+        if (!url) {
+            setAudioLoading(false);
+            pipedFailCount.current++;
+            console.log(`[Audio] Piped fail count: ${pipedFailCount.current}`);
+            if (pipedFailCount.current >= 3) {
+                console.log("[Audio] Switching to YouTube iframe fallback");
+                setUseFallbackYT(true);
+            }
+            return false;
+        }
+
+        pipedFailCount.current = 0;
+        audio.src = url;
+        try {
+            await audio.play();
+        } catch (e) {
+            console.log("[Audio] Play failed:", e.message);
+            // Retry once
+            try { await audio.play(); } catch { }
+        }
+        setAudioLoading(false);
+        return true;
+    }
 
     const loadVideo = useCallback(async (videoId) => {
         setCurrentTime(0);
-        if (isMobile) {
-            // Mobile: lấy audio URL từ Piped → phát qua <audio>
-            setAudioLoading(true);
-            try {
-                const url = await getAudioUrl(videoId);
-                if (url && audioRef.current) {
-                    audioRef.current.src = url;
-                    audioRef.current.play().catch(() => { });
-                }
-            } catch { /* silent */ }
-            setAudioLoading(false);
+        if (useAudio) {
+            return loadVideoMobile(videoId);
         } else {
-            // Desktop: YouTube iframe
             ytRef.current?.loadVideoById?.(videoId);
+            return true;
         }
-    }, []);
+    }, [useAudio]);
 
     const play = useCallback(() => {
-        if (isMobile) {
+        if (useAudio) {
             audioRef.current?.play?.().catch(() => { });
         } else {
             ytRef.current?.playVideo?.();
         }
-    }, []);
+    }, [useAudio]);
 
     const pause = useCallback(() => {
-        if (isMobile) {
-            audioRef.current?.pause?.();
-        } else {
-            ytRef.current?.pauseVideo?.();
-        }
-    }, []);
+        if (useAudio) audioRef.current?.pause?.();
+        else ytRef.current?.pauseVideo?.();
+    }, [useAudio]);
 
     const seekTo = useCallback((t) => {
         setCurrentTime(t);
-        if (isMobile) {
-            if (audioRef.current) audioRef.current.currentTime = t;
-        } else {
-            ytRef.current?.seekTo?.(t, true);
-        }
-    }, []);
+        if (useAudio) { if (audioRef.current) audioRef.current.currentTime = t; }
+        else ytRef.current?.seekTo?.(t, true);
+    }, [useAudio]);
 
     const setVol = useCallback((v) => {
         setVolume(v);
-        if (isMobile) {
-            if (audioRef.current) audioRef.current.volume = v / 100;
-        } else {
-            ytRef.current?.setVolume?.(v);
-        }
-    }, []);
+        if (useAudio) { if (audioRef.current) audioRef.current.volume = v / 100; }
+        else ytRef.current?.setVolume?.(v);
+    }, [useAudio]);
 
     // ─── Playlists ───
     const [playlists, setPlaylists] = useState(() => {
@@ -215,22 +259,19 @@ export function PlayerProvider({ children }) {
     const nowPl = nowPlaying ? playlists.find(p => p.id === nowPlaying.playlistId) : null;
     const nowSong = nowPl?.songs[nowPlaying?.songIdx] || null;
 
-    // Sync state vào ref
     useEffect(() => {
         stateRef.current = { nowPlaying, playlists, shuffle, loop, history };
     });
 
-    // ─── Media Session (mobile lock screen) ───
+    // ─── Media Session ───
     useEffect(() => {
-        if (!isMobile || !nowSong) return;
-        updateMediaSession(
-            nowSong.title,
-            nowPl?.name || "",
-            () => play(),
-            () => pause(),
-            () => skipNext(),
-            () => skipPrev()
-        );
+        if (!nowSong) return;
+        updateMediaSession(nowSong.title, nowPl?.name || "", {
+            play: () => play(),
+            pause: () => pause(),
+            next: () => skipNext(),
+            prev: () => skipPrev(),
+        });
     }, [nowSong, nowPl]);
 
     // ─── Helpers ───
@@ -254,58 +295,40 @@ export function PlayerProvider({ children }) {
         return null;
     }
 
-    async function loadAndPlay(plId, idx) {
+    async function doLoadAndPlay(plId, idx) {
         const pl = stateRef.current.playlists.find(p => p.id === plId);
         if (!pl || !pl.songs[idx]) return;
         setNowPlaying({ playlistId: plId, songIdx: idx });
         setHistory(prev => [...prev, idx]);
         setCurrentTime(0);
 
-        if (isMobile) {
-            setAudioLoading(true);
-            try {
-                const url = await getAudioUrl(pl.songs[idx].videoId);
-                if (url && audioRef.current) {
-                    audioRef.current.src = url;
-                    audioRef.current.play().catch(() => { });
-                }
-            } catch { /* silent */ }
-            setAudioLoading(false);
+        if (useAudio) {
+            await loadVideoMobile(pl.songs[idx].videoId);
         } else {
             ytRef.current?.loadVideoById?.(pl.songs[idx].videoId);
         }
     }
 
-    // ─── Play bài (user action) ───
+    // ─── User actions ───
     const playSong = useCallback((plId, idx) => {
         const pl = playlists.find(p => p.id === plId);
         if (!pl || !pl.songs[idx]) return;
+        unlockAudio();
         setHistory([idx]);
         setNowPlaying({ playlistId: plId, songIdx: idx });
         setCurrentTime(0);
 
-        if (isMobile) {
-            (async () => {
-                setAudioLoading(true);
-                try {
-                    const url = await getAudioUrl(pl.songs[idx].videoId);
-                    if (url && audioRef.current) {
-                        audioRef.current.src = url;
-                        audioRef.current.play().catch(() => { });
-                    }
-                } catch { /* silent */ }
-                setAudioLoading(false);
-            })();
+        if (useAudio) {
+            loadVideoMobile(pl.songs[idx].videoId);
         } else {
             ytRef.current?.loadVideoById?.(pl.songs[idx].videoId);
         }
-    }, [playlists]);
+    }, [playlists, useAudio]);
 
-    // ─── Skip ───
     const skipNext = useCallback(() => {
         const result = resolveNext(stateRef.current);
-        if (result) loadAndPlay(result.plId, result.idx);
-    }, []);
+        if (result) doLoadAndPlay(result.plId, result.idx);
+    }, [useAudio]);
 
     const skipPrev = useCallback(() => {
         const s = stateRef.current;
@@ -316,20 +339,17 @@ export function PlayerProvider({ children }) {
             const newHist = s.history.slice(0, -1);
             const prevIdx = newHist[newHist.length - 1];
             setHistory(newHist);
-            loadAndPlay(pl.id, prevIdx);
+            doLoadAndPlay(pl.id, prevIdx);
             return;
         }
-        const prevIdx = Math.max(0, s.nowPlaying.songIdx - 1);
-        loadAndPlay(pl.id, prevIdx);
-    }, []);
+        doLoadAndPlay(pl.id, Math.max(0, s.nowPlaying.songIdx - 1));
+    }, [useAudio]);
 
-    // ─── onEnd ───
     function handleEnd() {
         const result = resolveNext(stateRef.current);
-        if (result) loadAndPlay(result.plId, result.idx);
+        if (result) doLoadAndPlay(result.plId, result.idx);
     }
 
-    // ─── Expose ───
     const value = {
         containerRef, ready, playing, currentTime, duration, volume,
         play, pause, seekTo, setVol,
@@ -337,13 +357,12 @@ export function PlayerProvider({ children }) {
         nowPlaying, setNowPlaying, nowPl, nowSong,
         playSong, skipNext, skipPrev,
         shuffle, setShuffle, loop, setLoop,
-        isMobile, audioLoading,
+        isMobile: useAudio, audioLoading,
     };
 
     return (
         <PlayerContext.Provider value={value}>
-            {/* YouTube container — desktop only, hidden */}
-            {!isMobile && (
+            {(!isMobile || useFallbackYT) && (
                 <div style={{ position: "fixed", top: -9999, left: -9999, width: 1, height: 1, overflow: "hidden" }}>
                     <div ref={containerRef} />
                 </div>
