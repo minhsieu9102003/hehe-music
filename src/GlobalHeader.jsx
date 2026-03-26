@@ -1123,7 +1123,7 @@ const globalHeaderStyles = `
   margin-right: 8px;
 }
 @media (max-width: 767px) {
-  .gh-module-container .gh-icon-btn { display: none; }
+  .gh-module-container .gh-icon-btn { display: flex; }
 }
 .gh-module-menu {
   position: absolute;

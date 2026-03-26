@@ -14,15 +14,6 @@ function savePlaylists(pl) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(pl));
 }
 
-function fisherYatesShuffle(length) {
-    const order = Array.from({ length }, (_, i) => i);
-    for (let i = order.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [order[i], order[j]] = [order[j], order[i]];
-    }
-    return order;
-}
-
 let _nextId = Date.now();
 export function uid() { return _nextId++; }
 
@@ -30,7 +21,7 @@ const PlayerContext = createContext(null);
 export function usePlayer() { return useContext(PlayerContext); }
 
 export function PlayerProvider({ children }) {
-    // YouTube player
+    // ─── YouTube Player ───
     const playerRef = useRef(null);
     const containerRef = useRef(null);
     const [ready, setReady] = useState(false);
@@ -39,7 +30,9 @@ export function PlayerProvider({ children }) {
     const [duration, setDuration] = useState(0);
     const [volume, setVolume] = useState(80);
     const intervalRef = useRef(null);
-    const onEndCbRef = useRef(null);
+
+    // Ref giữ state mới nhất cho callback YouTube (tránh stale closure)
+    const stateRef = useRef({});
 
     useEffect(() => {
         if (window.YT && window.YT.Player) { initPlayer(); return; }
@@ -69,7 +62,7 @@ export function PlayerProvider({ children }) {
                         clearInterval(intervalRef.current);
                     }
                     if (e.data === window.YT.PlayerState.ENDED) {
-                        onEndCbRef.current?.();
+                        handleEnd();
                     }
                 },
             },
@@ -86,136 +79,113 @@ export function PlayerProvider({ children }) {
     const seekTo = useCallback((t) => { playerRef.current?.seekTo?.(t, true); setCurrentTime(t); }, []);
     const setVol = useCallback((v) => { playerRef.current?.setVolume?.(v); setVolume(v); }, []);
 
-    // Playlists
+    // ─── Playlists ───
     const [playlists, setPlaylists] = useState(() => {
         const saved = loadPlaylists();
         return saved.length > 0 ? saved : DEFAULT_PLAYLISTS;
     });
     useEffect(() => { savePlaylists(playlists); }, [playlists]);
 
-    // Playback state
+    // ─── Playback State ───
     const [nowPlaying, setNowPlaying] = useState(null);
     const [shuffle, setShuffle] = useState(false);
     const [loop, setLoop] = useState(false);
-    const [shuffleOrder, setShuffleOrder] = useState([]);
-    const [shufflePos, setShufflePos] = useState(0);
+    const [history, setHistory] = useState([]);
 
     const nowPl = nowPlaying ? playlists.find(p => p.id === nowPlaying.playlistId) : null;
     const nowSong = nowPl?.songs[nowPlaying?.songIdx] || null;
 
-    const playSongDirect = useCallback((plId, idx) => {
+    // Sync vào ref mỗi render
+    useEffect(() => {
+        stateRef.current = { nowPlaying, playlists, shuffle, loop, history };
+    });
+
+    // ─── Helpers ───
+    function pickRandom(total, avoid) {
+        if (total <= 1) return 0;
+        let next, tries = 0;
+        do { next = Math.floor(Math.random() * total); tries++; }
+        while (next === avoid && tries < 30);
+        return next;
+    }
+
+    function resolveNext(s) {
+        const { nowPlaying: np, playlists: pls, shuffle: sh, loop: lp } = s;
+        if (!np) return null;
+        const pl = pls.find(p => p.id === np.playlistId);
+        if (!pl || pl.songs.length === 0) return null;
+        if (sh) return { plId: pl.id, idx: pickRandom(pl.songs.length, np.songIdx) };
+        const next = np.songIdx + 1;
+        if (next < pl.songs.length) return { plId: pl.id, idx: next };
+        if (lp) return { plId: pl.id, idx: 0 };
+        return null;
+    }
+
+    function loadAndPlay(plId, idx) {
+        const pl = stateRef.current.playlists.find(p => p.id === plId);
+        if (!pl || !pl.songs[idx]) return;
+        playerRef.current?.loadVideoById?.(pl.songs[idx].videoId);
+        setCurrentTime(0);
+        setNowPlaying({ playlistId: plId, songIdx: idx });
+        setHistory(prev => [...prev, idx]);
+    }
+
+    // ─── User bấm play 1 bài ───
+    const playSong = useCallback((plId, idx) => {
         const pl = playlists.find(p => p.id === plId);
         if (!pl || !pl.songs[idx]) return;
         loadVideo(pl.songs[idx].videoId);
         setNowPlaying({ playlistId: plId, songIdx: idx });
+        setHistory([idx]);
     }, [playlists, loadVideo]);
 
-    const playSong = useCallback((plId, idx) => {
-        const pl = playlists.find(p => p.id === plId);
-        if (!pl || !pl.songs[idx]) return;
-        if (shuffle) {
-            const newOrder = fisherYatesShuffle(pl.songs.length);
-            const pos = newOrder.indexOf(idx);
-            [newOrder[0], newOrder[pos]] = [newOrder[pos], newOrder[0]];
-            setShuffleOrder(newOrder);
-            setShufflePos(0);
-        }
-        playSongDirect(plId, idx);
-    }, [playlists, shuffle, playSongDirect]);
-
+    // ─── Skip Next ───
     const skipNext = useCallback(() => {
-        if (!nowPlaying || !nowPl) return;
-        if (shuffle) {
-            // Nếu chưa có shuffleOrder hoặc rỗng → tạo mới
-            if (shuffleOrder.length !== nowPl.songs.length) {
-                const newOrder = fisherYatesShuffle(nowPl.songs.length);
-                const pos = newOrder.indexOf(nowPlaying.songIdx);
-                [newOrder[0], newOrder[pos]] = [newOrder[pos], newOrder[0]];
-                setShuffleOrder(newOrder);
-                setShufflePos(1);
-                if (newOrder[1] !== undefined) playSongDirect(nowPl.id, newOrder[1]);
-                return;
-            }
-            const nextPos = shufflePos + 1;
-            if (nextPos < shuffleOrder.length) {
-                setShufflePos(nextPos);
-                playSongDirect(nowPl.id, shuffleOrder[nextPos]);
-            } else {
-                // Hết shuffle order → tạo lại
-                const newOrder = fisherYatesShuffle(nowPl.songs.length);
-                setShuffleOrder(newOrder);
-                setShufflePos(0);
-                playSongDirect(nowPl.id, newOrder[0]);
-            }
-        } else {
-            const next = nowPlaying.songIdx + 1;
-            if (next < nowPl.songs.length) {
-                playSongDirect(nowPl.id, next);
-            } else if (loop) {
-                playSongDirect(nowPl.id, 0);
-            }
-        }
-    }, [nowPlaying, nowPl, shuffle, loop, shuffleOrder, shufflePos, playSongDirect]);
+        const result = resolveNext(stateRef.current);
+        if (result) loadAndPlay(result.plId, result.idx);
+    }, []);
 
+    // ─── Skip Prev ───
     const skipPrev = useCallback(() => {
-        if (!nowPlaying || !nowPl) return;
-        if (shuffle) {
-            const prevPos = shufflePos - 1;
-            if (prevPos >= 0) {
-                setShufflePos(prevPos);
-                playSongDirect(nowPl.id, shuffleOrder[prevPos]);
-            }
-        } else {
-            playSongDirect(nowPl.id, Math.max(0, nowPlaying.songIdx - 1));
+        const s = stateRef.current;
+        if (!s.nowPlaying) return;
+        const pl = s.playlists.find(p => p.id === s.nowPlaying.playlistId);
+        if (!pl) return;
+        if (s.shuffle && s.history.length > 1) {
+            const newHist = s.history.slice(0, -1);
+            const prevIdx = newHist[newHist.length - 1];
+            setHistory(newHist);
+            const song = pl.songs[prevIdx];
+            if (!song) return;
+            playerRef.current?.loadVideoById?.(song.videoId);
+            setCurrentTime(0);
+            setNowPlaying({ playlistId: pl.id, songIdx: prevIdx });
+            return;
         }
-    }, [nowPlaying, nowPl, shuffle, shuffleOrder, shufflePos, playSongDirect]);
+        const prevIdx = Math.max(0, s.nowPlaying.songIdx - 1);
+        const song = pl.songs[prevIdx];
+        if (!song) return;
+        playerRef.current?.loadVideoById?.(song.videoId);
+        setCurrentTime(0);
+        setNowPlaying({ playlistId: pl.id, songIdx: prevIdx });
+        setHistory(prev => [...prev, prevIdx]);
+    }, []);
 
-    // onEnd handler — keep nowPlaying so mini player stays visible
-    onEndCbRef.current = () => {
-        if (!nowPlaying) return;
-        const pl = playlists.find(p => p.id === nowPlaying.playlistId);
-        if (!pl || pl.songs.length === 0) return;
-        if (shuffle) {
-            // Nếu chưa có shuffleOrder → tạo mới
-            if (shuffleOrder.length !== pl.songs.length) {
-                const newOrder = fisherYatesShuffle(pl.songs.length);
-                const pos = newOrder.indexOf(nowPlaying.songIdx);
-                [newOrder[0], newOrder[pos]] = [newOrder[pos], newOrder[0]];
-                setShuffleOrder(newOrder);
-                setShufflePos(1);
-                if (newOrder[1] !== undefined) playSongDirect(pl.id, newOrder[1]);
-                return;
-            }
-            const nextPos = shufflePos + 1;
-            if (nextPos < shuffleOrder.length) {
-                setShufflePos(nextPos);
-                playSongDirect(pl.id, shuffleOrder[nextPos]);
-            } else {
-                // Hết shuffle order → tạo lại
-                const newOrder = fisherYatesShuffle(pl.songs.length);
-                setShuffleOrder(newOrder);
-                setShufflePos(0);
-                playSongDirect(pl.id, newOrder[0]);
-            }
-        } else {
-            const next = nowPlaying.songIdx + 1;
-            if (next < pl.songs.length) {
-                playSongDirect(pl.id, next);
-            } else if (loop) {
-                playSongDirect(pl.id, 0);
-            }
+    // ─── onEnd: bài hết → tự next ───
+    function handleEnd() {
+        const result = resolveNext(stateRef.current);
+        if (result) {
+            loadAndPlay(result.plId, result.idx);
         }
-    };
+        // null → dừng nhưng giữ nowPlaying (mini player vẫn hiện)
+    }
 
     const value = {
-        // YT player
         containerRef, ready, playing, currentTime, duration, volume,
         play, pause, seekTo, setVol,
-        // Playlists
         playlists, setPlaylists,
-        // Playback
         nowPlaying, setNowPlaying, nowPl, nowSong,
-        playSong, playSongDirect, skipNext, skipPrev,
+        playSong, skipNext, skipPrev,
         shuffle, setShuffle, loop, setLoop,
     };
 

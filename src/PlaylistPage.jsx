@@ -491,7 +491,11 @@ const CSS = `
 .pl-player__song{font-size:13px;font-weight:600;color:#333;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pl-player__pl{font-size:11px;color:#999}
 .pl-player__center{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;max-width:600px;margin:0 auto}
-@media(max-width:767px){.pl-player__center{display:none}}
+@media(max-width:767px){.pl-player__center{max-width:none}}
+@media(max-width:767px){.pl-player__progress-row{display:none}}
+@media(max-width:767px){.pl-player__left{width:auto;max-width:120px}}
+@media(max-width:767px){.pl-player__right{gap:4px}}
+@media(max-width:767px){.pl-player__vol{display:none}}
 .pl-player__controls{display:flex;align-items:center;gap:16px}
 .pl-player__cbtn{width:32px;height:32px;border:none;background:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s}
 .pl-player__cbtn:hover{background:#f0f2f5}
