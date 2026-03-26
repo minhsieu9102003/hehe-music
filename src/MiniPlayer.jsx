@@ -29,7 +29,7 @@ export default function MiniPlayer() {
     const { page, go } = useContext(NavContext);
     const player = usePlayer();
     const { nowSong, nowPl, playing, currentTime, duration, volume,
-        play, pause, seekTo, setVol, skipNext, skipPrev, setNowPlaying } = player;
+        play, pause, seekTo, setVol, skipNext, skipPrev, setNowPlaying, audioLoading } = player;
 
     const [pos, setPos] = useState({ x: 20, y: 20 });
     const dragRef = useRef(null);
@@ -103,8 +103,8 @@ export default function MiniPlayer() {
                 <div className="mp__controls">
                     <div className="mp__btns">
                         <button className="mp__cbtn" onClick={skipPrev}><MiniIcon.SkipB /></button>
-                        <button className="mp__play" onClick={() => playing ? pause() : play()}>
-                            {playing ? <MiniIcon.Pause s={16} /> : <MiniIcon.Play s={16} />}
+                        <button className="mp__play" onClick={() => playing ? pause() : play()} disabled={audioLoading}>
+                            {audioLoading ? <span className="mp__spinner" /> : playing ? <MiniIcon.Pause s={16} /> : <MiniIcon.Play s={16} />}
                         </button>
                         <button className="mp__cbtn" onClick={skipNext}><MiniIcon.SkipF /></button>
                     </div>
@@ -158,4 +158,6 @@ const MINI_CSS = `
 .mp__vol::-webkit-slider-thumb{-webkit-appearance:none;width:8px;height:8px;background:#666;border-radius:50%;cursor:pointer}
 .mp__goto{width:28px;height:28px;border:none;background:#eaf4ee;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s}
 .mp__goto:hover{background:#d4e6d9}
+.mp__spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;display:inline-block;animation:mpSpin .6s linear infinite}
+@keyframes mpSpin{to{transform:rotate(360deg)}}
 `;

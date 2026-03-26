@@ -108,7 +108,8 @@ export default function PlaylistPage() {
     const p = usePlayer();
     const { playlists, setPlaylists, nowPlaying, setNowPlaying, nowPl, nowSong,
         playSong, skipNext, skipPrev, shuffle, setShuffle, loop, setLoop,
-        playing, currentTime, duration, volume, play, pause, seekTo, setVol } = p;
+        playing, currentTime, duration, volume, play, pause, seekTo, setVol,
+        isMobile, audioLoading } = p;
 
     const [search, setSearch] = useState("");
     const [plModal, setPlModal] = useState(false);
@@ -316,8 +317,8 @@ export default function PlaylistPage() {
                             <button className="pl-player__cbtn" onClick={skipPrev}>
                                 <Icon.SkipB s={16} c="#666" />
                             </button>
-                            <button className="pl-player__play" onClick={() => playing ? pause() : play()}>
-                                {playing ? <Icon.Pause s={18} /> : <Icon.Play s={18} />}
+                            <button className="pl-player__play" onClick={() => playing ? pause() : play()} disabled={audioLoading}>
+                                {audioLoading ? <span className="pl-player__spinner" /> : playing ? <Icon.Pause s={18} /> : <Icon.Play s={18} />}
                             </button>
                             <button className="pl-player__cbtn" onClick={skipNext}>
                                 <Icon.SkipF s={16} c="#666" />
@@ -502,6 +503,8 @@ const CSS = `
 .pl-player__cbtn--active{background:#eaf4ee}
 .pl-player__cbtn--active:hover{background:#dceee3}
 .pl-player__mini-btn{margin-left:8px}
+.pl-player__spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;display:inline-block;animation:plSpin .6s linear infinite}
+@keyframes plSpin{to{transform:rotate(360deg)}}
 .pl-player__play{width:36px;height:36px;border:none;background:#5d8a72;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s}
 .pl-player__play:hover{background:#4a7560}
 .pl-player__progress-row{display:flex;align-items:center;gap:8px;width:100%}
