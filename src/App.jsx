@@ -9,6 +9,7 @@ import RgScopePage from "./RgScopePage";
 import DocsPage from "./DocsPage";
 import LinksPage from "./LinksPage";
 import PullRequestPage from "./PullRequestPage";
+import NameQuizPage from "./NameQuizPage";
 import { NavContext } from "./NavContext";
 import { PlayerProvider } from "./PlayerContext";
 import { NoteProvider } from "./NoteContext";
@@ -30,6 +31,7 @@ export default function App() {
       case "docs": return <DocsPage />;
       case "links": return <LinksPage />;
       case "pr-tracker": return <PullRequestPage />;
+      case "name-quiz": return <NameQuizPage />;
       default: return <HomePage />;
     }
   };
